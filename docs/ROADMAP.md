@@ -26,6 +26,7 @@ Prioridades: Impact (H/M/L) · Effort (S/M/L) · Priority (P1/P2/P3) · Status.
 | B001 | Ferramenta de correcção visual dos limites de recorte (T004 gerou recortes ESTIMADOS; manifesto editável + re-correr script) | H | M | P2 | pending |
 | B002 | H1 (docs/HYPOTHESES.md): verificar documentalmente convocatória de Cortes não realizada c. 1470 (Documentos de D. Afonso V) | H | M | P2 | pending |
 | B003 | Cenário quick-comparação A/B/C na toolbar (quando T006/T008 existirem) para teste rápido de hipóteses reticulares vs. hexágono | M | S | P3 | pending |
+| B004 | Elementos de arquitetura plausível (porta, janela, altar, trono) como restrições de parede no T006 — geometria simples + validação de sobreposição painel×elemento (H2, docs/HYPOTHESES.md) | H | M | P1 | pending |
 
 ### Fora do âmbito (SPEC §11) — não planear sem nova base documental
 

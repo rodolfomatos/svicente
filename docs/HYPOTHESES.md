@@ -41,6 +41,34 @@ plano de verificação e estado.
 
 ---
 
+## H2 — A arquitetura da localização original restringe a disposição
+
+- **Classificação:** HIPÓTESE
+- **Autor:** investigador (pergunta de conversa, 2026-10-18)
+- **Enunciado:** portas, janelas, altar, trono ou bancos do espaço original
+  determinam onde cada painel pode estar; a linha contínua apresentada no
+  museu pode não corresponder à disposição original (os estreitos poderiam
+  flanquear um vão de janela, por exemplo).
+- **Evidência a favor:** largura pintada total (5,04 m) cabe em qualquer
+  parede real — o que a arquitetura decide é onde NÃO pode haver painel;
+  os dois painéis grandes juntos (2,56 m) formam exatamente um dossel de
+  trono/altar; a distribuição estreito-estreito-grande-grande-estreito-estreito
+  é compatível com simetria axial.
+- **Evidência contra (conhecida):** hipótese da Sé de Lisboa implicaria muro
+  sólido da capela-mor sem obstruções no eixo (a verificar documentalmente);
+  a linha contínua é a apresentação do museu, com história própria a
+  verificar.
+- **Teste geométrico no protótipo:**
+  1. Modelar elementos de parede (porta, janela, altar, trono) como
+     restrições de ocupação (B004) e verificar sobreposições painel×elemento.
+  2. T007: coplanaridade das linhas do pavimento distingue linha contínua
+     (A) de grupos separados por vão (C).
+  3. C exige que as linhas de um grupo se expliquem sem as do outro.
+- **Estado:** aberta — aguarda B004 (camada de arquitetura no T006) e T007.
+- **Data:** 2026-10-18
+
+---
+
 ## Regras do registry
 
 - Novas hipóteses: classificação HIPÓTESE, enunciado testável, evidência
