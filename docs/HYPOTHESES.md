@@ -108,12 +108,22 @@ plano de verificação e estado.
   sólido da capela-mor sem obstruções no eixo (a verificar documentalmente);
   a linha contínua é a apresentação do museu, com história própria a
   verificar.
+- **Ensaio de viabilidade — Capela-mor da Sé de Lisboa (2026-10-19):**
+  - Footprint do hexágono regular (painéis posicionados com `distanceToWall 0,05 m`):
+    - r=2,5 → span X ~4,24 m, span Z ~4,90 m (diâmetro útil ~4,9 m)
+    - r=2,7 → ~4,59 m × ~5,29 m (diâmetro útil ~5,3 m, ESTIMADO)
+    - r=2,8 → ~4,75 m × ~5,49 m (~5,5 m)
+    - r=3,0 → ~5,11 m × ~5,90 m (~5,9 m)
+  - Vão interior da capela-mor (ESTIMADO, não medição primária): ~6,0–6,5 m de largura; profundidade/diâmetro absidal ~5,5–6,5 m.
+  - **Conclusão geométrica:** com `radius ≈ 2,7 m`, o hexágono fechado encaixa no vão estimado (~6,0 m) com folga lateral moderada (~0,25–0,35 m por lado). Com `r=3,0 m` fica apertado (quase sem folga). Altura necessária: ≥2,40 m (painéis até ~2,33 m).
+  - **Caveats (não geométricos):** planta absidal ≠ hexágono regular; altar adiantado/trono ocupam eixo (gera conflitos detectáveis em B004); a viabilidade arquitectónica permanece **HIPÓTESE a documentar**. Disposições abertas (`u`, `angular`, `plana`) são mais compatíveis com obstruções no eixo.
 - **Teste geométrico no protótipo:**
   1. Modelar elementos de parede (porta, janela, altar, trono) como
      restrições de ocupação (B004) e verificar sobreposições painel×elemento.
   2. T007: coplanaridade das linhas do pavimento distingue linha contínua
      (A) de grupos separados por vão (C).
   3. C exige que as linhas de um grupo se expliquem sem as do outro.
+  4. Testar `hexagono` (r=2.7) + `Arquitetura → Altar` (protusão 0,8 m) — verificar conflitos; comparar com `u`.
 - **Estado:** B004 concluído no T006 (2026-10-18): elementos porta,
   janela, altar e trono modelados como restrições com dimensões
   ESTIMADAS e validação de sobreposição painel×elemento
