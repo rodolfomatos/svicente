@@ -12,7 +12,7 @@ current_ticket: ""
 | ID | Title | Sprint | Status |
 |----|-------|--------|--------|
 | T001 | Modelo de dados + geometria pura (painéis, hexágono 120°, raio 3 m) | sprint-01 | done |
-| T002 | Cena Three.js: painéis texturados, paredes, navegação orbital | sprint-01 | pending |
+| T002 | Cena Three.js: painéis texturados, paredes, navegação orbital | sprint-01 | done |
 | T003 | Painel de propriedades com edição numérica + vistas predefinidas | sprint-01 | pending |
 | T004 | Imagens dos painéis + metadados e proveniência na UI | sprint-01 | pending |
 | T005 | Camada de anotação: linhas do pavimento (coords normalizadas) | sprint-01 | pending |
@@ -32,6 +32,7 @@ current_ticket: ""
 | ID | Title |
 |----|-------|
 | T001 | Modelo de dados + geometria pura (painéis, hexágono 120°, raio 3 m) |
+| T002 | Cena Three.js: painéis texturados, paredes, navegação orbital |
 
 ## Blocked
 
