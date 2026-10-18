@@ -31,6 +31,14 @@
       <button id="view-lateral" type="button">Lateral</button>
       <button id="view-centro" type="button">Centro do espaço</button>
       <button id="toggle-proj" type="button" aria-pressed="false">Ortográfica</button>
+      <button
+        id="toggle-draw"
+        type="button"
+        aria-pressed="false"
+        title="Clique e arraste sobre um painel para marcar uma linha do pavimento"
+      >
+        Traçar linhas
+      </button>
 
       <span class="sep"></span>
       <label><input id="show-walls" type="checkbox" checked /> Paredes</label>
@@ -65,8 +73,9 @@
       <aside id="analysis" aria-label="Painel de análise">
         <h2>Análise</h2>
         <p class="hint">
-          Camadas analíticas ficam disponíveis em T005/T007 (linhas do pavimento, pontos
-          de fuga).
+          Camadas analíticas. Em modo «Traçar linhas», clique e arraste sobre um painel
+          para marcar linhas do pavimento (coordenadas normalizadas da imagem;
+          acompanham o painel, SPEC §6.1). Interseções/pontos de fuga: T007.
         </p>
         <ul id="analysis-layers"></ul>
       </aside>

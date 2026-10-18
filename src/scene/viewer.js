@@ -9,9 +9,20 @@ import { TransformControls } from 'three/addons/controls/TransformControls.js';
 /**
  * @param {HTMLCanvasElement} canvas
  * @param {{onSelect?: (obj: THREE.Object3D|null) => void,
- *          onChange?: (obj: THREE.Object3D) => void}} [opts]
+ *          onChange?: (obj: THREE.Object3D) => void,
+ *          onDrawPreview?: (panelId: string|null,
+ *                           a?: {u:number,v:number},
+ *                           b?: {u:number,v:number}) => void,
+ *          onDrawSegment?: (panelId: string,
+ *                           a: {u:number,v:number},
+ *                           b: {u:number,v:number}) => void}} [opts]
+ *   onDrawPreview/onDrawSegment: modo de traço de linhas (SPEC §6.1);
+ *   durante o traço a orbita é suspensa para não deslizar a câmara.
  */
-export function createViewer(canvas, { onSelect, onChange } = {}) {
+export function createViewer(
+  canvas,
+  { onSelect, onChange, onDrawPreview, onDrawSegment } = {}
+) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -58,14 +69,7 @@ export function createViewer(canvas, { onSelect, onChange } = {}) {
     onSelect?.(obj);
   }
 
-  canvas.addEventListener('pointerdown', (e) => {
-    downPos = { x: e.clientX, y: e.clientY };
-  });
-  canvas.addEventListener('pointerup', (e) => {
-    if (!downPos) return;
-    const moved = Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y);
-    downPos = null;
-    if (moved > 4) return; // arrastou: não é selecção
+  function hitPanel(e) {
     const rect = canvas.getBoundingClientRect();
     pointer.set(
       ((e.clientX - rect.left) / rect.width) * 2 - 1,
@@ -76,7 +80,54 @@ export function createViewer(canvas, { onSelect, onChange } = {}) {
       scene.children.filter((o) => o.userData?.type === 'panel'),
       false
     );
-    select(hits[0]?.object ?? null);
+    const hit = hits[0];
+    return hit && hit.uv
+      ? { object: hit.object, uv: { u: hit.uv.x, v: hit.uv.y } }
+      : null;
+  }
+
+  // --- Modo de traço de linhas (SPEC §6.1) ---
+  let drawMode = false;
+  let drawStart = null; // { panelId, a } enquanto se arrasta
+
+  canvas.addEventListener('pointerdown', (e) => {
+    downPos = { x: e.clientX, y: e.clientY };
+    if (drawMode) {
+      const hit = hitPanel(e);
+      if (hit) {
+        drawStart = { panelId: hit.object.userData.panelId, a: hit.uv };
+        orbit.enabled = false; // sem orbitar enquanto se traça
+        onDrawPreview?.(drawStart.panelId, drawStart.a, drawStart.a);
+      }
+    }
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (drawStart) {
+      const hit = hitPanel(e);
+      const b =
+        hit && hit.object.userData.panelId === drawStart.panelId ? hit.uv : drawStart.a;
+      onDrawPreview?.(drawStart.panelId, drawStart.a, b);
+    }
+  });
+  canvas.addEventListener('pointerup', (e) => {
+    if (drawStart) {
+      const hit = hitPanel(e);
+      const b =
+        hit && hit.object.userData.panelId === drawStart.panelId ? hit.uv : drawStart.a;
+      const { panelId, a } = drawStart;
+      drawStart = null;
+      orbit.enabled = true;
+      onDrawPreview?.(null);
+      if (Math.hypot(b.u - a.u, b.v - a.v) >= 0.005) onDrawSegment?.(panelId, a, b);
+      downPos = null;
+      return;
+    }
+    if (!downPos) return;
+    const moved = Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y);
+    downPos = null;
+    if (moved > 4) return; // arrastou: não é selecção
+    const hit = hitPanel(e);
+    select(hit?.object ?? null);
   });
 
   // --- Alternação perspectiva/ortográfica (SPEC §5.A, §7) ---
@@ -148,6 +199,18 @@ export function createViewer(canvas, { onSelect, onChange } = {}) {
     setOrthographic,
     setView,
     select,
+    /** Liga/desliga o modo de traço de linhas (SPEC §6.1). */
+    setDrawMode(on) {
+      drawMode = on;
+      if (!on && drawStart) {
+        drawStart = null;
+        orbit.enabled = true;
+        onDrawPreview?.(null);
+      }
+    },
+    get drawMode() {
+      return drawMode;
+    },
     get selected() {
       return selected;
     },

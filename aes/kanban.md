@@ -15,7 +15,7 @@ current_ticket: ""
 | T002 | Cena Three.js: painéis texturados, paredes, navegação orbital | sprint-01 | done |
 | T003 | Painel de propriedades com edição numérica + vistas predefinidas | sprint-01 | done |
 | T004 | Imagens dos painéis + metadados e proveniência na UI | sprint-01 | done |
-| T005 | Camada de anotação: linhas do pavimento (coords normalizadas) | sprint-01 | pending |
+| T005 | Camada de anotação: linhas do pavimento (coords normalizadas) | sprint-01 | done |
 | T006 | Configurações alternativas (plana, angular, irregular, personalizada) | sprint-01 | pending |
 | T007 | Análise: retas, pontos de fuga, desvios angulares entre painéis | sprint-01 | pending |
 | T008 | Cenários nomeados + LocalStorage + export/import JSON | sprint-01 | pending |
@@ -35,6 +35,7 @@ current_ticket: ""
 | T002 | Cena Three.js: painéis texturados, paredes, navegação orbital |
 | T003 | Painel de propriedades com edição numérica + vistas predefinidas |
 | T004 | Imagens dos painéis + metadados de proveniência e licença |
+| T005 | Camada de anotação: linhas do pavimento (coord. normalizadas) |
 
 ## Blocked
 

@@ -12,9 +12,12 @@ import {
   offsetsFromWall,
   panelTransformFromState,
 } from './model/panelState.js';
+import { createAnnotationStore } from './model/annotations.js';
 import { createSpace } from './scene/space.js';
 import { createAllPanelViews } from './scene/panelView.js';
+import { createAnnotationLayer } from './scene/annotationView.js';
 import { createViewer } from './scene/viewer.js';
+import { createAnalysisPanel } from './ui/analysisPanel.js';
 import { createPropertiesPanel } from './ui/propertiesPanel.js';
 
 const $ = (id) => document.getElementById(id);
@@ -22,7 +25,36 @@ const $ = (id) => document.getElementById(id);
 let space = null;
 let vertices = [];
 
+/** Anotações de linhas por painel (coordenadas normalizadas, SPEC §6.1). */
+const annotations = createAnnotationStore();
+/** @type {Map<string, ReturnType<typeof createAnnotationLayer>>} */
+const annotationLayers = new Map();
+const layerVisibility = new Map(); // por defeito visível
+
 const properties = createPropertiesPanel($('properties'), { onEdit });
+const analysis = createAnalysisPanel($('analysis-layers'), {
+  onToggle: (panelId, visible) => {
+    layerVisibility.set(panelId, visible);
+    annotationLayers.get(panelId)?.setVisible(visible);
+  },
+});
+
+const ALL_PANEL_IDS = [
+  'frades',
+  'pescadores',
+  'infante',
+  'arcebispo',
+  'cavaleiros',
+  'reliquia',
+];
+
+function refreshAnalysis() {
+  analysis.renderLines(
+    ALL_PANEL_IDS.map((id) => ({ id })),
+    (id) => annotations.count(id),
+    (id) => layerVisibility.get(id) !== false
+  );
+}
 
 const viewer = createViewer($('scene'), {
   onSelect: (obj) => {
@@ -33,6 +65,19 @@ const viewer = createViewer($('scene'), {
     // Gizmo movido: ressincroniza estado de colocação e campos numéricos.
     resyncState(obj);
     properties.sync(obj);
+  },
+  onDrawPreview: (panelId, a, b) => {
+    for (const [id, layer] of annotationLayers) {
+      layer.setPreview(
+        id === panelId && a && b ? a : null,
+        id === panelId && a && b ? b : null
+      );
+    }
+  },
+  onDrawSegment: (panelId, a, b) => {
+    annotations.addSegment(panelId, a, b);
+    annotationLayers.get(panelId)?.setSegments(annotations.list(panelId));
+    analysis.updateCounts((id) => annotations.count(id));
   },
 });
 
@@ -63,6 +108,11 @@ function applyState(mesh) {
   const t = panelTransformFromState(vertices, st);
   mesh.position.set(t.position.x, t.position.y, t.position.z);
   mesh.rotation.y = t.rotationY;
+  // Dimensões editadas → escala sobre a geometria publicada. Sem isto
+  // (bug descoberto no T003), largura/altura alteradas só moviam a malha
+  // mas não a redimensionavam. A escala arrasta as anotações-filhas.
+  const pub = mesh.userData.panel;
+  mesh.scale.set(st.width / pub.width, st.height / pub.height, 1);
 }
 
 /** Depois de um arrasto do gizmo, recalcula parede e offsets a partir da posição. */
@@ -127,6 +177,8 @@ function buildScene(radiusM) {
   viewer.scene.add(space.group);
 
   vertices = polygonVertices({ sides: 6, radius: radiusM });
+  for (const layer of annotationLayers.values()) layer.dispose();
+  annotationLayers.clear();
   createAllPanelViews().forEach((mesh, i) => {
     const frame = wallFrame(vertices, i);
     const { position, rotationY } = placeOnWall({
@@ -139,8 +191,14 @@ function buildScene(radiusM) {
     mesh.rotation.y = rotationY;
     viewer.scene.add(mesh);
     initState(mesh);
+    // Camada de linhas filha da malha (acompanha transformações, crit. 7).
+    const layer = createAnnotationLayer(mesh);
+    layer.setSegments(annotations.list(mesh.userData.panel.id));
+    layer.setVisible(layerVisibility.get(mesh.userData.panel.id) !== false);
+    annotationLayers.set(mesh.userData.panel.id, layer);
   });
   toggleLayers();
+  refreshAnalysis();
 }
 
 // --- Barra de ferramentas (SPEC §5.A) ---
@@ -160,6 +218,23 @@ $('toggle-proj').addEventListener('click', (e) => {
   viewer.setOrthographic(toOrtho);
   e.currentTarget.setAttribute('aria-pressed', String(toOrtho));
   e.currentTarget.textContent = toOrtho ? 'Perspectiva' : 'Ortográfica';
+});
+
+// --- Modo de traço de linhas (SPEC §6.1) ---
+$('toggle-draw').addEventListener('click', (e) => {
+  const toDraw = e.currentTarget.getAttribute('aria-pressed') !== 'true';
+  viewer.setDrawMode(toDraw);
+  e.currentTarget.setAttribute('aria-pressed', String(toDraw));
+  e.currentTarget.textContent = toDraw ? 'Concluir traço' : 'Traçar linhas';
+});
+// Cancelar traço com Escape (sem guardar o segmento em curso).
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && viewer.drawMode) {
+    viewer.setDrawMode(false);
+    const btn = $('toggle-draw');
+    btn.setAttribute('aria-pressed', 'false');
+    btn.textContent = 'Traçar linhas';
+  }
 });
 
 function toggleLayers() {
