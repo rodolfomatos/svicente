@@ -14,7 +14,7 @@ current_ticket: ""
 | T001 | Modelo de dados + geometria pura (painéis, hexágono 120°, raio 3 m) | sprint-01 | done |
 | T002 | Cena Three.js: painéis texturados, paredes, navegação orbital | sprint-01 | done |
 | T003 | Painel de propriedades com edição numérica + vistas predefinidas | sprint-01 | done |
-| T004 | Imagens dos painéis + metadados e proveniência na UI | sprint-01 | pending |
+| T004 | Imagens dos painéis + metadados e proveniência na UI | sprint-01 | done |
 | T005 | Camada de anotação: linhas do pavimento (coords normalizadas) | sprint-01 | pending |
 | T006 | Configurações alternativas (plana, angular, irregular, personalizada) | sprint-01 | pending |
 | T007 | Análise: retas, pontos de fuga, desvios angulares entre painéis | sprint-01 | pending |

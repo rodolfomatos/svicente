@@ -17,7 +17,7 @@ pavimento (critérios 1–7 de SPEC §10).
 | T001 | Modelo de dados + geometria pura | done |
 | T002 | Cena Three.js: painéis texturados, paredes, navegação orbital | done |
 | T003 | Painel de propriedades com edição numérica + vistas predefinidas | done |
-| T004 | Imagens dos painéis + metadados e proveniência na UI | pending |
+| T004 | Imagens dos painéis + metadados e proveniência na UI | done |
 | T005 | Camada de anotação: linhas do pavimento (coords normalizadas) | pending |
 
 ## Retrospective

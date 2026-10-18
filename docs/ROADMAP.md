@@ -23,7 +23,9 @@ Prioridades: Impact (H/M/L) · Effort (S/M/L) · Priority (P1/P2/P3) · Status.
 
 | # | Item | Impact | Effort | Priority | Status |
 |---|------|--------|--------|----------|--------|
-| B001 | [DISCOVERED] — | | | | |
+| B001 | [DISCOVERED mid-T004] — | | | | |
+| B002 | H1 (docs/HYPOTHESES.md): verificar documentalmente convocatória de Cortes não realizada c. 1470 (Documentos de D. Afonso V) | H | M | P2 | pending |
+| B003 | Cenário quick-comparação A/B/C na toolbar (quando T006/T008 existirem) para teste rápido de hipóteses reticulares vs. hexágono | M | S | P3 | pending |
 
 ### Fora do âmbito (SPEC §11) — não planear sem nova base documental
 
