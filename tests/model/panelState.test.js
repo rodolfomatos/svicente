@@ -6,12 +6,15 @@ import { polygonVertices } from '../../src/geometry/regularPolygon.js';
 import { placeOnWall, wallFrame } from '../../src/geometry/panelPlacement.js';
 import {
   distanceToSegment,
+  framesFromVertices,
   nearestWallIndex,
   offsetsFromWall,
   panelTransformFromState,
 } from '../../src/model/panelState.js';
 
 const V = polygonVertices({ sides: 6, radius: 3 });
+// T006: as funções trabalham sobre frames de parede (qualquer disposição).
+const W = framesFromVertices(V);
 
 describe('distanceToSegment', () => {
   const a = { x: 0, z: 0 };
@@ -41,30 +44,22 @@ describe('nearestWallIndex', () => {
       // deslocado 0.2 m para dentro, ao longo da normal da parede
       const inward = { x: -mid.x / 3, z: -mid.z / 3 };
       const p = { x: mid.x + inward.x * 0.2, z: mid.z + inward.z * 0.2 };
-      expect(nearestWallIndex(V, p)).toBe(i);
+      expect(nearestWallIndex(W, p)).toBe(i);
     }
   });
 
   test('centro do espaço: equidistante de todas as paredes (resultado determinístico)', () => {
     // No centro o empate é real; o ponto é que a função é determinística —
     // sempre o mesmo índice para a mesma entrada, nunca aleatória.
-    const a = nearestWallIndex(V, { x: 0, z: 0 });
-    const b = nearestWallIndex(V, { x: 0, z: 0 });
+    const a = nearestWallIndex(W, { x: 0, z: 0 });
+    const b = nearestWallIndex(W, { x: 0, z: 0 });
     expect(a).toBe(b);
     expect(a).toBeGreaterThanOrEqual(0);
     expect(a).toBeLessThan(6);
   });
 
-  test('menos de 3 vértices rejeitado', () => {
-    expect(() =>
-      nearestWallIndex(
-        [
-          { x: 0, z: 0 },
-          { x: 1, z: 0 },
-        ],
-        { x: 0, z: 0 }
-      )
-    ).toThrow();
+  test('sem paredes rejeitado', () => {
+    expect(() => nearestWallIndex([], { x: 0, z: 0 })).toThrow();
   });
 });
 
@@ -83,7 +78,7 @@ describe('offsetsFromWall / round-trip com placeOnWall', () => {
         lateralOffset: off,
         distanceToWall: dist,
       }).position;
-      const round = offsetsFromWall(V, index, expected);
+      const round = offsetsFromWall(W, index, expected);
       expect(round.lateralOffset).toBeCloseTo(off, 9);
       expect(round.distanceToWall).toBeCloseTo(dist, 9);
     }
@@ -105,21 +100,25 @@ describe('panelTransformFromState', () => {
   };
 
   test('posição base na convenção painel-de-pé (y = altura/2)', () => {
-    const t = panelTransformFromState(V, state);
+    const t = panelTransformFromState(W, state);
     expect(t.position.y).toBeCloseTo(2.07 / 2, 9);
   });
 
   test('faceFlipped rota exactamente π', () => {
-    const base = panelTransformFromState(V, state);
-    const flipped = panelTransformFromState(V, { ...state, faceFlipped: true });
+    const base = panelTransformFromState(W, state);
+    const flipped = panelTransformFromState(W, { ...state, faceFlipped: true });
     expect(flipped.rotationY - base.rotationY).toBeCloseTo(Math.PI, 9);
     expect(flipped.position).toEqual(base.position);
   });
 
   test('rotação aponta a face para o centro (sem flip)', () => {
-    const t = panelTransformFromState(V, state);
+    const t = panelTransformFromState(W, state);
     const frame = wallFrame(V, state.wallIndex);
     expect(Math.sin(t.rotationY)).toBeCloseTo(frame.inward.x, 9);
     expect(Math.cos(t.rotationY)).toBeCloseTo(frame.inward.z, 9);
+  });
+
+  test('parede inexistente no layout rejeitada', () => {
+    expect(() => panelTransformFromState(W.slice(0, 1), state)).toThrow(/parede/);
   });
 });

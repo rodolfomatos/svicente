@@ -1,8 +1,19 @@
 /**
  * Estado de colocação de um painel e sincronização com a parede —
  * geometria pura, sem DOM nem Three.js.
+ *
+ * Trabalha sobre ENQUADRAMENTOS DE PAREDE (frames: {a, b, midpoint,
+ * inward}), produzidos por `wallFrame`/`frameFromSegment`/`buildLayout` —
+ * assim serve qualquer disposição (fechada ou aberta), não só o hexágono.
  */
-import { wallFrame, placeOnWall } from '../geometry/panelPlacement.js';
+import { frameFromSegment, placeOnWall } from '../geometry/panelPlacement.js';
+
+/** Converte uma lista de polígonos-parede em frames (compatibilidade). */
+export function framesFromVertices(vertices, center = { x: 0, z: 0 }) {
+  return vertices.map((_, i) =>
+    frameFromSegment(vertices[i], vertices[(i + 1) % vertices.length], center)
+  );
+}
 
 /**
  * Distância de um ponto a um segmento (plano XZ).
@@ -20,13 +31,13 @@ export function distanceToSegment(p, a, b) {
 /**
  * Índice da parede mais próxima de uma posição (plano XZ).
  */
-export function nearestWallIndex(vertices, position) {
-  const n = vertices.length;
-  if (n < 3) throw new Error('precisa de >= 3 vértices');
+export function nearestWallIndex(walls, position) {
+  const n = walls.length;
+  if (n < 1) throw new Error('precisa de >= 1 parede');
   let best = 0;
   let bestDist = Infinity;
   for (let i = 0; i < n; i++) {
-    const d = distanceToSegment(position, vertices[i], vertices[(i + 1) % n]);
+    const d = distanceToSegment(position, walls[i].a, walls[i].b);
     if (d < bestDist) {
       bestDist = d;
       best = i;
@@ -41,8 +52,8 @@ export function nearestWallIndex(vertices, position) {
  *
  * @returns {{lateralOffset: number, distanceToWall: number}}
  */
-export function offsetsFromWall(vertices, index, position) {
-  const frame = wallFrame(vertices, index);
+export function offsetsFromWall(walls, index, position) {
+  const frame = walls[index];
   const tangent = { x: -frame.inward.z, z: frame.inward.x };
   const dx = position.x - frame.midpoint.x;
   const dz = position.z - frame.midpoint.z;
@@ -62,12 +73,13 @@ export function offsetsFromWall(vertices, index, position) {
  * deliberado: a reorientação para o centro é a semântica da parede).
  * Rotações X/Z do gizmo são preservadas.
  *
- * @param {{x: number, z: number}[]} vertices
+ * @param {object[]} walls frames de parede ({a, b, midpoint, inward})
  * @param {{wallIndex: number, lateralOffset: number, distanceToWall: number,
  *          width: number, height: number, faceFlipped?: boolean}} state
  */
-export function panelTransformFromState(vertices, state) {
-  const frame = wallFrame(vertices, state.wallIndex);
+export function panelTransformFromState(walls, state) {
+  const frame = walls[state.wallIndex];
+  if (!frame) throw new Error(`parede inexistente no layout: ${state.wallIndex}`);
   const { position, rotationY } = placeOnWall({
     frame,
     panelWidth: state.width,

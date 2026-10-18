@@ -8,6 +8,23 @@
  */
 
 /**
+ * Enquadramento de um segmento de parede: extremidades, ponto médio e
+ * normal interior unitária (do segmento para um ponto interior dado).
+ *
+ * @param {{x:number,z:number}} a
+ * @param {{x:number,z:number}} b
+ * @param {{x: number, z: number}} interior ponto para o qual a face aponta
+ */
+export function frameFromSegment(a, b, interior) {
+  const midpoint = { x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 };
+  const dx = interior.x - midpoint.x;
+  const dz = interior.z - midpoint.z;
+  const len = Math.hypot(dx, dz);
+  if (len < 1e-12) throw new Error('parede degenerada: ponto médio no interior');
+  return { a, b, midpoint, inward: { x: dx / len, z: dz / len } };
+}
+
+/**
  * Enquadramento de uma parede: extremidades, ponto médio e normal
  * interior unitária (do centro da parede para o centro do espaço).
  *
@@ -20,14 +37,7 @@ export function wallFrame(vertices, index, center = { x: 0, z: 0 }) {
   if (!Number.isInteger(index) || index < 0 || index >= n) {
     throw new Error(`índice de parede inválido: ${index} (0..${n - 1})`);
   }
-  const a = vertices[index];
-  const b = vertices[(index + 1) % n];
-  const midpoint = { x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 };
-  const dx = center.x - midpoint.x;
-  const dz = center.z - midpoint.z;
-  const len = Math.hypot(dx, dz);
-  if (len < 1e-12) throw new Error('parede degenerada: ponto médio no centro');
-  return { a, b, midpoint, inward: { x: dx / len, z: dz / len } };
+  return frameFromSegment(vertices[index], vertices[(index + 1) % n], center);
 }
 
 /**

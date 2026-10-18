@@ -83,7 +83,11 @@ body {
 
 #layout {
   display: grid;
-  grid-template-columns: 260px 1fr 260px;
+  grid-template-columns: 260px 1fr 280px;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    'props viewport analysis'
+    'props viewport architecture';
   height: calc(100% - 49px);
 }
 
@@ -94,9 +98,19 @@ aside {
 }
 
 #properties {
+  grid-area: props;
   border-right: 1px solid var(--border);
 }
+#viewport {
+  grid-area: viewport;
+}
 #analysis {
+  grid-area: analysis;
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+#architecture {
+  grid-area: architecture;
   border-left: 1px solid var(--border);
 }
 
@@ -148,4 +162,41 @@ aside .hint {
   border-top: 1px solid var(--border);
   color: var(--muted);
   font-size: 12px;
+}
+
+/* --- Painel de arquitetura (B004) --- */
+.element-form-row {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+.element-form-row select,
+.element-form-row input {
+  min-width: 0;
+  flex: 1;
+}
+.element-list,
+.conflict-list {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+}
+.element-list li,
+.conflict-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.conflict-list li {
+  color: #e0a3a3;
+}
+aside h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 16px 0 4px;
 }

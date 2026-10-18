@@ -137,6 +137,39 @@ def main() -> None:
             page.wait_for_timeout(500)
             page.screenshot(path=OUT / "visual-check-centro.png")
 
+            # 6. Disposições alternativas (T006): cada uma renderiza com
+            #    variação real de pixels e sem erros de consola.
+            for layout_id in ["plana", "angular", "u", "irregular"]:
+                page.select_option("#config-select", layout_id)
+                page.wait_for_timeout(700)
+                page.locator("#scene").screenshot(path=str(OUT / f"visual-check-{layout_id}.png"))
+                arr = np.asarray(
+                    Image.open(OUT / f"visual-check-{layout_id}.png").convert("L"),
+                    dtype=np.float32,
+                )
+                if arr.std() < 5.0:
+                    failures.append(f"disposição {layout_id} parece vazia (std={arr.std():.1f})")
+
+            # 7. Elementos de arquitetura (B004): porta na parede 1 gera
+            #    conflito com o painel centrado; remoção limpa a lista.
+            page.select_option("#config-select", "hexagono")
+            page.wait_for_timeout(700)
+            page.select_option(".element-form select >> nth=0", "porta")
+            page.fill(".element-form input[type=number]", "0")
+            page.click(".element-form button[type=submit]")
+            page.wait_for_timeout(300)
+            n_elements = page.locator(".element-list li").count()
+            n_conflicts = page.locator(".conflict-list li").count()
+            if n_elements != 1:
+                failures.append(f"elemento não apareceu na lista (n={n_elements})")
+            if n_conflicts < 1:
+                failures.append("porta ao centro não gerou conflito com painel")
+            page.screenshot(path=OUT / "visual-check-arquitetura.png")
+            page.click(".element-list li button")
+            page.wait_for_timeout(200)
+            if page.locator(".element-list li").count() != 0:
+                failures.append("remover elemento não limpou a lista")
+
             browser.close()
 
         real_errors = [e for e in console_errors if "favicon" not in e]
@@ -153,7 +186,8 @@ def main() -> None:
         for f in failures:
             print(f"  - {f}")
         raise SystemExit(1)
-    print("OK: cena renderiza, 6 camadas, traço cria anotação, texturas 200.")
+    print("OK: cena renderiza, 6 camadas, traço cria anotação, texturas 200,")
+    print("    5 disposições renderizam, conflitos porta×painel detectados.")
     print(f"screenshots em {OUT}/visual-check-*.png")
 
 

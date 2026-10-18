@@ -19,6 +19,11 @@ pavimento (critérios 1–7 de SPEC §10).
 | T003 | Painel de propriedades com edição numérica + vistas predefinidas | done |
 | T004 | Imagens dos painéis + metadados e proveniência na UI | done |
 | T005 | Camada de anotação: linhas do pavimento (coords normalizadas) | done |
+| T006 | Disposições alternativas + arquitetura como restrições (B004) | done |
+
+> T006 foi executado em sprint-01 por dependência natural de T005
+> (frames de parede generalizam a colocação) — «personalizada» ficou
+> para B005.
 
 ## Retrospective
 

@@ -64,7 +64,18 @@ plano de verificação e estado.
   2. T007: coplanaridade das linhas do pavimento distingue linha contínua
      (A) de grupos separados por vão (C).
   3. C exige que as linhas de um grupo se expliquem sem as do outro.
-- **Estado:** aberta — aguarda B004 (camada de arquitetura no T006) e T007.
+- **Estado:** B004 concluído no T006 (2026-10-18): elementos porta,
+  janela, altar e trono modelados como restrições com dimensões
+  ESTIMADAS e validação de sobreposição painel×elemento
+  (`src/model/architecture.js`, teste em `tests/model/architecture.test.js`).
+  Resultado já legível do teste 1: **janela de peitoril 1,1 m colide
+  sempre com painel-de-pé de ~2,07 m** (topo do vão 2,4 m > base do
+  painel) — para H2-C (estreitos a flanquear janela), os painéis
+  teriam de ser mais curtos ou assentar acima do peitoril; as
+  dimensões publicadas não o permitem. Isto enfraquece a variante C
+  *tal como formulada*, mantendo-a viva apenas com painéis suspensos
+  (fora da convenção painel-de-pé, SPEC §4). Aguarda T007
+  (coplanaridade por grupo) e confronto com fontes documentais.
 - **Data:** 2026-10-18
 
 ---

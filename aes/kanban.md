@@ -16,7 +16,7 @@ current_ticket: ""
 | T003 | Painel de propriedades com edição numérica + vistas predefinidas | sprint-01 | done |
 | T004 | Imagens dos painéis + metadados e proveniência na UI | sprint-01 | done |
 | T005 | Camada de anotação: linhas do pavimento (coords normalizadas) | sprint-01 | done |
-| T006 | Configurações alternativas (plana, angular, irregular, personalizada) | sprint-01 | pending |
+| T006 | Configurações alternativas (plana, angular, U, irregular) + arquitetura (B004) | sprint-01 | done |
 | T007 | Análise: retas, pontos de fuga, desvios angulares entre painéis | sprint-01 | pending |
 | T008 | Cenários nomeados + LocalStorage + export/import JSON | sprint-01 | pending |
 | T009 | Perspetiva/ortográfica + posições de câmara guardadas | sprint-01 | pending |

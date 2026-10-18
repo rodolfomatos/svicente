@@ -1,29 +1,40 @@
 /**
- * Ponto de entrada: compõe espaço, painéis e visor; ligeia interface e
- * mantém o estado de colocação de cada painel (SPEC §5).
+ * Ponto de entrada: compõe espaço, painéis, arquitetura e visor; ligeia
+ * interface e mantém o estado de colocação de cada painel (SPEC §5).
  *
- * Disposição inicial: um painel por parede, virado para o centro — é uma
- * HIPÓTESE de partida para manipulação (SPEC §1, §5), não uma reconstrução.
+ * Disposições (T006): hexágono (hipótese C, SPEC §4), linha plana,
+ * angular, U e hexágono irregular — todas HIPÓTESE de comparação.
+ * Elementos de arquitetura (B004/H2): porta, janela, altar, trono como
+ * restrições com dimensões ESTIMADAS.
  */
-import { polygonVertices } from './geometry/regularPolygon.js';
-import { wallFrame, placeOnWall } from './geometry/panelPlacement.js';
+import { placeOnWall } from './geometry/panelPlacement.js';
 import {
   nearestWallIndex,
   offsetsFromWall,
   panelTransformFromState,
 } from './model/panelState.js';
+import { buildLayout, LAYOUTS } from './model/layouts.js';
+import { createElement, findConflicts } from './model/architecture.js';
 import { createAnnotationStore } from './model/annotations.js';
 import { createSpace } from './scene/space.js';
 import { createAllPanelViews } from './scene/panelView.js';
 import { createAnnotationLayer } from './scene/annotationView.js';
+import { syncElementViews } from './scene/architectureView.js';
 import { createViewer } from './scene/viewer.js';
 import { createAnalysisPanel } from './ui/analysisPanel.js';
+import { createArchitecturePanel } from './ui/architecturePanel.js';
 import { createPropertiesPanel } from './ui/propertiesPanel.js';
 
 const $ = (id) => document.getElementById(id);
 
 let space = null;
-let vertices = [];
+/** Frames de parede da disposição activa (model/layouts.js). */
+let walls = [];
+/** Disposição activa. */
+let layout = buildLayout('hexagono', { radius: 3 });
+/** Elementos de arquitetura (B004). */
+let elements = [];
+let elementSeq = 0;
 
 /** Anotações de linhas por painel (coordenadas normalizadas, SPEC §6.1). */
 const annotations = createAnnotationStore();
@@ -36,6 +47,20 @@ const analysis = createAnalysisPanel($('analysis-layers'), {
   onToggle: (panelId, visible) => {
     layerVisibility.set(panelId, visible);
     annotationLayers.get(panelId)?.setVisible(visible);
+  },
+});
+const archPanel = createArchitecturePanel($('architecture'), {
+  onAdd: (type, wallIndex, lateralOffset) => {
+    elementSeq += 1;
+    elements.push({
+      ...createElement(type, wallIndex, lateralOffset),
+      id: `e${elementSeq}`,
+    });
+    refreshArchitecture();
+  },
+  onRemove: (id) => {
+    elements = elements.filter((e) => e.id !== id);
+    refreshArchitecture();
   },
 });
 
@@ -56,6 +81,20 @@ function refreshAnalysis() {
   );
 }
 
+/** Reconstói vistos de elementos e recalcula conflitos (H2). */
+function refreshArchitecture() {
+  const container = space.elementGroup;
+  syncElementViews(container, elements, walls);
+  const panelObjs = viewer.scene.children.filter((o) => o.userData?.type === 'panel');
+  archPanel.render(elements);
+  archPanel.renderConflicts(
+    findConflicts(
+      panelObjs.map((m) => ({ id: m.userData.panelId, state: m.userData.state })),
+      elements
+    )
+  );
+}
+
 const viewer = createViewer($('scene'), {
   onSelect: (obj) => {
     properties.show(obj);
@@ -65,6 +104,7 @@ const viewer = createViewer($('scene'), {
     // Gizmo movido: ressincroniza estado de colocação e campos numéricos.
     resyncState(obj);
     properties.sync(obj);
+    if (elements.length) refreshArchitecture(); // conflitos podem mudar
   },
   onDrawPreview: (panelId, a, b) => {
     for (const [id, layer] of annotationLayers) {
@@ -86,9 +126,9 @@ const viewer = createViewer($('scene'), {
  * efectivas (podem divergir das publicadas — ajuste do investigador).
  */
 function initState(mesh) {
-  const wallIndex = nearestWallIndex(vertices, mesh.position);
+  const wallIndex = nearestWallIndex(walls, mesh.position);
   const { lateralOffset, distanceToWall } = offsetsFromWall(
-    vertices,
+    walls,
     wallIndex,
     mesh.position
   );
@@ -105,7 +145,8 @@ function initState(mesh) {
 /** Reaplica o estado à malha (posição/orientação via geometria pura). */
 function applyState(mesh) {
   const st = mesh.userData.state;
-  const t = panelTransformFromState(vertices, st);
+  if (st.wallIndex >= walls.length) st.wallIndex = walls.length - 1;
+  const t = panelTransformFromState(walls, st);
   mesh.position.set(t.position.x, t.position.y, t.position.z);
   mesh.rotation.y = t.rotationY;
   // Dimensões editadas → escala sobre a geometria publicada. Sem isto
@@ -118,9 +159,9 @@ function applyState(mesh) {
 /** Depois de um arrasto do gizmo, recalcula parede e offsets a partir da posição. */
 function resyncState(mesh) {
   const st = mesh.userData.state;
-  st.wallIndex = nearestWallIndex(vertices, mesh.position);
+  st.wallIndex = nearestWallIndex(walls, mesh.position);
   const { lateralOffset, distanceToWall } = offsetsFromWall(
-    vertices,
+    walls,
     st.wallIndex,
     mesh.position
   );
@@ -158,7 +199,7 @@ function onEdit(field, value) {
       applyState(mesh);
       break;
     case 'wallIndex':
-      st.wallIndex = value;
+      st.wallIndex = Math.min(value, walls.length - 1);
       applyState(mesh);
       break;
     case 'faceFlipped':
@@ -168,19 +209,30 @@ function onEdit(field, value) {
     default:
       return;
   }
+  if (elements.length) refreshArchitecture();
   properties.sync(mesh);
 }
 
-function buildScene(radiusM) {
+function buildScene(layoutDef) {
   if (space) viewer.scene.remove(space.group);
-  space = createSpace({ sides: 6, radius: radiusM, height: 3 });
+  layout = layoutDef;
+  walls = layoutDef.walls;
+
+  const boundsRadius = Math.max(
+    ...walls.flatMap((w) => [Math.hypot(w.a.x, w.a.z), Math.hypot(w.b.x, w.b.z)])
+  );
+  space = createSpace({
+    walls,
+    height: 3,
+    closed: layoutDef.closed,
+    boundsRadius,
+  });
   viewer.scene.add(space.group);
 
-  vertices = polygonVertices({ sides: 6, radius: radiusM });
   for (const layer of annotationLayers.values()) layer.dispose();
   annotationLayers.clear();
   createAllPanelViews().forEach((mesh, i) => {
-    const frame = wallFrame(vertices, i);
+    const frame = walls[i % walls.length];
     const { position, rotationY } = placeOnWall({
       frame,
       panelWidth: mesh.userData.panel.width,
@@ -199,13 +251,27 @@ function buildScene(radiusM) {
   });
   toggleLayers();
   refreshAnalysis();
+  archPanel.setWallCount(walls.length);
+  refreshArchitecture();
 }
 
 // --- Barra de ferramentas (SPEC §5.A) ---
+const configSelect = $('config-select');
+for (const l of LAYOUTS) {
+  const opt = document.createElement('option');
+  opt.value = l.id;
+  opt.textContent = l.name;
+  configSelect.append(opt);
+}
+configSelect.addEventListener('change', () => {
+  const radius = Number($('radius-input').value) || 3;
+  buildScene(buildLayout(configSelect.value, { radius }));
+});
+
 $('radius-input').addEventListener('change', (e) => {
   const v = Number(e.target.value);
-  if (Number.isFinite(v) && v >= 0.5) buildScene(v);
-  else e.target.value = space.metrics.radius;
+  if (Number.isFinite(v) && v >= 0.5) buildScene(buildLayout(layout.id, { radius: v }));
+  else e.target.value = space.metrics.radius ?? 3;
 });
 
 $('view-frontal').addEventListener('click', () => viewer.setView('frontal'));
@@ -241,7 +307,7 @@ function toggleLayers() {
   space.wallMeshes.forEach((m) => {
     m.visible = $('show-walls').checked;
   });
-  space.floor.visible = $('show-floor').checked;
+  if (space.floor) space.floor.visible = $('show-floor').checked;
   space.grid.visible = $('show-grid').checked;
   space.axes.visible = $('show-axes').checked;
 }
@@ -250,4 +316,5 @@ function toggleLayers() {
 );
 
 // --- Arranque ---
-buildScene(3);
+configSelect.value = 'hexagono';
+buildScene(layout);
