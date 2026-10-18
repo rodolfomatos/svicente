@@ -352,9 +352,10 @@ Estado actual (2026-10-18):
   `assets/images/panels/manifest.json` (classificação MEDIDO; nota de
   perspectiva residual objective 19 mm, deltas de proporção 0,7–5,0%
   vs. tabelas publicadas).
-- **Código:** sem licença definida ainda (ver
-  [limitações](#limitações-conhecidas)) — escolher uma antes de
-  divulgar.
+- **Código:** [CC BY-SA 3.0](LICENSE) — escolha deliberada para ser
+  consistente com a licença da fotografia base das texturas
+  (Villafruela, CC BY-SA 3.0); reutilizações derivadas partilham a
+  mesma licença, com atribuição.
 
 Referências documentais adicionais em `docs/SPEC.md` (Google Arts &
 Culture; Modernismo.pt).
