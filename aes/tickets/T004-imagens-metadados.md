@@ -36,15 +36,27 @@ manifesto é editável e o script re-corre), imagens alternativas por painel.
 
 ## Notes
 
+- **v2 (2026-10-18, `06e8661`):** o investigador produziu recortes
+  individuais em GIMP (correcção de perspectiva, sem molduras),
+  substituindo os recortes proporcionais ESTIMADOS. Classificação
+  MEDIDO; ordem confirmada pelo investigador (DOCUMENTADO). Correlação
+  automática vs. recortes antigos foi fraca — confirma a necessidade da
+  correcção manual.
+- **[BUG desde T002, apanhado pelo cheque visual]** `TransformControls`
+  (three r170) deixou de ser `Object3D`: `scene.add(transform)` falhava
+  silenciosamente e o gizmo nunca apareceu. Corrigido com
+  `scene.add(transform.getHelper())`.
 - Licença: fotografia CC BY-SA 3.0 (Daniel Villafruela) + obra PD-Art
   (Nuno Gonçalves) — compatível com artigo científico com atribuição.
-- Decisão hostil: análise automática de vãos escuros na imagem foi
+- Decisão hostil (v1): análise automática de vãos escuros na imagem foi
   inconsistente com qualquer modelo linear de escala (resíduos >250 px)
-  — recorte proporcional ESTIMADO é o honesto; duas fronteiras geradas
-  coincidem com vãos escuros reais (evidência indireta favorável).
-- Ordem assumida na fotografia (esq.→dir.): Frades, Pescadores, Infante,
-  Arcebispo, Cavaleiros, Relíquia. Se o investigador detetar inversão,
-  corrigir a ordem em analysis/crop_panels.py e re-correr.
+  — levou ao recorte proporcional ESTIMADO, depois superado pela
+  correcção manual do investigador.
+- Ordem confirmada (esq.→dir.): Frades, Pescadores, Infante, Arcebispo,
+  Cavaleiros, Relíquia.
+- **Cheque visual:** `python3 analysis/visual_check.py` — Playwright +
+  Chromium headless (SwiftShader): canvas renderiza, 6 camadas, traço
+  cria anotação, texturas 200, screenshots em `tmp/`.
 
 ## Diffstory
 

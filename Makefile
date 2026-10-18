@@ -1,4 +1,4 @@
-.PHONY: setup run test python-test lint format build check doctor help
+.PHONY: setup run test python-test lint format build check doctor help visual-check
 
 AES_LANGUAGE ?= javascript
 AES_LINT ?= npx eslint src tests --ext .js,.ts
@@ -8,6 +8,7 @@ AES_BUILD ?= npm run build
 AES_RUN ?= npm start
 AES_PYTEST ?= python3 -m pytest -q
 AES_RUFF ?= python3 -m ruff check analysis
+AES_VISUAL ?= python3 analysis/visual_check.py
 
 export AES_LANGUAGE AES_LINT AES_TEST AES_FORMAT AES_BUILD AES_RUN
 
@@ -34,6 +35,10 @@ build:
 	@$(AES_BUILD)
 
 check: docs-check code-check test-check lint-check python-test
+
+# Cheque visual local (Playwright + WebGL via SwiftShader); não corre em CI.
+visual-check:
+	@$(AES_VISUAL)
 
 docs-check:
 	@test -f docs/VISION.md && grep -q "Problem" docs/VISION.md
@@ -62,4 +67,4 @@ doctor:
 	@echo "Python: $$(python3 -V 2>/dev/null || echo not-found)"
 
 help:
-	@echo "AES Commands: make setup run test lint format build check doctor"
+	@echo "AES Commands: make setup run test lint format build check doctor visual-check"
