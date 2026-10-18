@@ -1,43 +1,45 @@
 #!/usr/bin/env python3
-"""Recorta os seis painéis a partir da fotografia do políptico completo.
+"""Gera as texturas dos painéis a partir das imagens recortadas pelo investigador.
 
-Reprodutível: mesma imagem de entrada -> mesmos recortes. O manifesto
-gerado (manifest.json) é a fonte de verdade dos metadados de imagem
-(SPEC docs/SPEC.md §8, requisito N4).
+Cadeia de proveniência (SPEC §8, N4):
+  1. Fotografia original: Daniel Villafruela, 2014-09-17, Wikimedia Commons,
+     CC BY-SA 3.0 (assets/images/source/poliptico-villafruela-2014.jpg).
+  2. Recorte por painel + correcção de perspectiva + remoção de molduras:
+     transformação manual do INVESTIGADOR (GIMP), 2026-10-18, a partir da
+     fotografia acima. Ficheiros: assets/images/source/1.jpg .. 6.jpg.
+     Ordem confirmada pelo investigador (2026-10-18): esquerda → direita.
+  3. Geração de textura: este script, reprodutível — mesma entrada → mesma saída.
 
-CLASSIFICAÇÃO DOS LIMITES DE RECORTE: ESTIMADO.
-Os limites são proporcionais às larguras publicadas (SPEC §3) sob a
-hipótese de escala uniforme. A fotografia (lente 19 mm, distorção de
-perspectiva, molduras e vãos entre painéis) NÃO garante escala uniforme —
-análise de zonas escuras da imagem foi inconsistente com qualquer modelo
-linear. Os recortes são portanto aproximações de trabalho, não medições.
+Classificação: MEDIDO — os recortes são medições directas do investigador
+sobre a fotografia, com transformação de perspectiva aplicada. Continuam
+sujeitas às limitações da fotografia de origem (lente 19 mm, resolução;
+SPEC §8).
 
-Uso:  python3 analysis/crop_panels.py [--source PATH]
+Uso:  python3 analysis/crop_panels.py [--source-dir PATH]
 """
 
 import argparse
 import json
-from fractions import Fraction
 from pathlib import Path
 
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "assets/images/source/poliptico-villafruela-2014.jpg"
+SOURCE_DIR = ROOT / "assets/images/source"
 OUT_DIR = ROOT / "assets/images/panels"
 
-# Dimensões publicadas (m) — SPEC §3; ordem na fotografia (esq. → dir.).
+# Ordem esquerda → direita, confirmada pelo investigador (2026-10-18).
+# Dimensões publicadas (m) — SPEC §3.
 PANELS = [
-    ("frades", "Painel dos Frades", 2.072, 0.642),
-    ("pescadores", "Painel dos Pescadores", 2.070, 0.600),
-    ("infante", "Painel do Infante", 2.064, 1.280),
-    ("arcebispo", "Painel do Arcebispo", 2.060, 1.283),
-    ("cavaleiros", "Painel dos Cavaleiros", 2.066, 0.604),
-    ("reliquia", "Painel da Relíquia", 2.065, 0.631),
+    ("frades", "Painel dos Frades", 2.072, 0.642, "1.jpg"),
+    ("pescadores", "Painel dos Pescadores", 2.070, 0.600, "2.jpg"),
+    ("infante", "Painel do Infante", 2.064, 1.280, "3.jpg"),
+    ("arcebispo", "Painel do Arcebispo", 2.060, 1.283, "4.jpg"),
+    ("cavaleiros", "Painel dos Cavaleiros", 2.066, 0.604, "5.jpg"),
+    ("reliquia", "Painel da Relíquia", 2.065, 0.631, "6.jpg"),
 ]
 
-# Metadados da fonte (Wikimedia Commons, verificado 2026-10-18).
-SOURCE_META = {
+PHOTO_META = {
     "url": (
         "https://commons.wikimedia.org/wiki/"
         "File:Lisboa-Museu_Nacional_de_Arte_Antiga-Pol%C3%ADptico_de_S%C3%A3o_Vicente-20140917.jpg"
@@ -49,86 +51,77 @@ SOURCE_META = {
     "license_photo_url": "https://creativecommons.org/licenses/by-sa/3.0/",
     "license_artwork": "Domínio público (PD-Art) — Nuno Gonçalves, c. 1470–1480",
     "attribution_required": (
-        "Fotografia: Daniel Villafruela, CC BY-SA 3.0, via Wikimedia Commons. "
-        "Obra: Nuno Gonçalves, c. 1470–1480, domínio público, "
-        "Museu Nacional de Arte Antiga, Lisboa."
+        "Fotografia: Daniel Villafruela, CC BY-SA 3.0, via Wikimedia Commons; "
+        "recorte e correcção de perspectiva: investigador. Obra: Nuno Gonçalves, "
+        "c. 1470–1480, domínio público, Museu Nacional de Arte Antiga, Lisboa."
     ),
 }
 
-PROVENANCE_NOTE = (
-    "Limites de recorte ESTIMADOS: proporcionais às larguras publicadas "
-    "(SPEC §3) sob hipótese de escala uniforme. A fotografia tem distorção "
-    "de perspectiva (lente 19 mm) e vãos/molduras entre painéis; os "
-    "recortes podem incluir moldura ou cortar conteúdo e devem ser "
-    "verificados visualmente pelo investigador. Medições sobre esta imagem "
-    "herdam as limitações da perspectiva fotográfica (SPEC §8)."
-)
+INVESTIGATOR_EDIT = {
+    "author": "investigator",
+    "date": "2026-10-18",
+    "tool": "GIMP",
+    "operations": [
+        "recorte por painel a partir da fotografia completa",
+        "correcção de perspectiva (transformação de plano) até retificação rectangular",
+        "remoção das molduras",
+    ],
+}
 
 MEASUREMENT_CAVEAT = (
-    "Medições feitas sobre esta fotografia estão sujeitas à distorção de "
-    "perspectiva, distorção ótica da lente e resolução limitada (SPEC §8)."
+    "Medições feitas sobre estas imagens estão sujeitas às limitações da "
+    "fotografia de origem: distorção de perspectiva residual da lente de "
+    "19 mm, resolução limitada e correcção de perspectiva aproximada "
+    "(SPEC §8). A correcção de perspectiva do investigador é documentada, "
+    "mas a exactidão métrica do retângulo resultante não é garantida."
 )
-
-
-def crop_fractions() -> list[Fraction]:
-    """Fronteiras acumuladas como frações exactas da largura total."""
-    total = sum(Fraction(round(w * 1000)) for _, _, _, w in PANELS)
-    acc = Fraction(0)
-    bounds = [Fraction(0)]
-    for _, _, _, w in PANELS:
-        acc += Fraction(round(w * 1000))
-        bounds.append(acc / total)
-    return bounds
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, default=SOURCE)
+    parser.add_argument("--source-dir", type=Path, default=SOURCE_DIR)
     args = parser.parse_args()
-
-    if not args.source.exists():
-        raise SystemExit(f"imagem de origem em falta: {args.source}")
-
-    img = Image.open(args.source)
-    width, height = img.size
-    bounds = crop_fractions()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     manifest = {
-        "schema": "svicente-images-v1",
-        "source": SOURCE_META,
+        "schema": "svicente-images-v2",
+        "provenance_chain": "foto-villafruela -> recorte+perspectiva-investigador -> textura",
+        "source_photo": PHOTO_META,
+        "investigator_edit": INVESTIGATOR_EDIT,
         "measurement_caveat": MEASUREMENT_CAVEAT,
-        "crop_provenance": "ESTIMADO",
-        "crop_note": PROVENANCE_NOTE,
-        "source_image": {
-            "path": str(args.source.relative_to(ROOT)),
-            "width_px": width,
-            "height_px": height,
-        },
+        "crop_provenance": "MEDIDO",
         "panels": [],
     }
 
-    for i, (pid, name, h_m, w_m) in enumerate(PANELS):
-        x0 = round(float(bounds[i]) * width)
-        x1 = round(float(bounds[i + 1]) * width)
-        crop = img.crop((x0, 0, x1, height))
+    for pid, name, h_m, w_m, src_name in PANELS:
+        src_path = args.source_dir / src_name
+        if not src_path.exists():
+            raise SystemExit(f"imagem de origem em falta: {src_path}")
+        img = Image.open(src_path)
+        if img.mode != "RGB":
+            img = img.convert("RGB")
         out = OUT_DIR / f"{pid}.jpg"
-        crop.save(out, "JPEG", quality=92)
+        img.save(out, "JPEG", quality=92)
+        aspect = img.width / img.height
+        pub_aspect = w_m / h_m
         manifest["panels"].append(
             {
                 "id": pid,
                 "name": name,
                 "file": f"assets/images/panels/{pid}.jpg",
-                "crop_px": {"x0": x0, "x1": x1, "y0": 0, "y1": height},
-                "crop_fraction": [str(bounds[i]), str(bounds[i + 1])],
-                "resolution_px": {"width": crop.width, "height": crop.height},
+                "source_file": f"assets/images/source/{src_name}",
+                "resolution_px": {"width": img.width, "height": img.height},
                 "published_m": {"height": h_m, "width": w_m},
-                "provenance": "ESTIMADO",
-                "source": SOURCE_META["url"],
-                "license": SOURCE_META["license_photo"],
+                "aspect_delta_pct": round(abs(aspect - pub_aspect) / pub_aspect * 100, 1),
+                "provenance": "MEDIDO",
+                "source": PHOTO_META["url"],
+                "license": PHOTO_META["license_photo"],
             }
         )
-        print(f"{pid:12s} x[{x0:5d},{x1:5d}) {crop.width}x{crop.height}")
+        print(
+            f"{pid:12s} <- {src_name}  {img.width}x{img.height}  "
+            f"aspect={aspect:.3f} (pub={pub_aspect:.3f}, Δ{manifest['panels'][-1]['aspect_delta_pct']}%)"
+        )
 
     (OUT_DIR / "manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"

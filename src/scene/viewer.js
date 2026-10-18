@@ -49,6 +49,9 @@ export function createViewer(
   orbit.enableDamping = true;
   orbit.target.set(0, 1.2, 0);
 
+  // three r170+: TransformControls deixou de ser Object3D — o helper é o
+  // objecto que entra na cena (sem isto, scene.add avisava e o gizmo não
+  // aparecia; apanhado pelo cheque visual Playwright, T005).
   const transform = new TransformControls(persp, canvas);
   transform.addEventListener('dragging-changed', (e) => {
     orbit.enabled = !e.value;
@@ -56,7 +59,7 @@ export function createViewer(
   transform.addEventListener('objectChange', () => {
     if (selected) onChange?.(selected);
   });
-  scene.add(transform);
+  scene.add(transform.getHelper());
 
   // --- Seleção por clique (raycast nos painéis) ---
   const raycaster = new THREE.Raycaster();
