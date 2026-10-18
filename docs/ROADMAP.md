@@ -14,7 +14,7 @@ Prioridades: Impact (H/M/L) · Effort (S/M/L) · Priority (P1/P2/P3) · Status.
 | T004 | Imagens dos painéis + metadados (fonte, licença, resolução) e classificação de proveniência na UI | H | S | P1 | done |
 | T005 | Camada de anotação: linhas do pavimento sobre a imagem em coordenadas normalizadas, solidárias ao painel | H | L | P1 | done |
 | T006 | Configurações alternativas: plana, angular aberta, U, polígono irregular (frames de parede; personalizada: T006b) + elementos de arquitetura (B004) | H | M | P2 | done |
-| T007 | Análise: ajuste de retas, pontos de fuga, ângulos/desvios entre painéis, continuidade proposta | H | L | P2 | pending |
+| T007 | Análise: ajuste de retas, pontos de fuga, ângulos/desvios entre painéis, continuidade proposta | H | L | P2 | done |
 | T008 | Cenários nomeados A/B/C/D, persistência LocalStorage, export/import JSON completo | H | M | P2 | pending |
 | T009 | Comparação perspetiva/ortográfica, posições de câmara guardadas | M | S | P3 | pending |
 | T010 | Exportação: imagem da vista, tabela de medições, anotações por painel, versão+parâmetros | M | S | P3 | pending |

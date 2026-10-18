@@ -6,7 +6,10 @@
  * angular, U e hexágono irregular — todas HIPÓTESE de comparação.
  * Elementos de arquitetura (B004/H2): porta, janela, altar, trono como
  * restrições com dimensões ESTIMADAS.
+ * Métricas (T007): direções dominantes, pontos de fuga, diedros,
+ * continuidade transfronteira (H1/H2).
  */
+import * as THREE from 'three';
 import { placeOnWall } from './geometry/panelPlacement.js';
 import {
   nearestWallIndex,
@@ -15,6 +18,7 @@ import {
 } from './model/panelState.js';
 import { buildLayout, LAYOUTS } from './model/layouts.js';
 import { createElement, findConflicts } from './model/architecture.js';
+import { analyzeLayout } from './model/analysis.js';
 import { createAnnotationStore } from './model/annotations.js';
 import { createSpace } from './scene/space.js';
 import { createAllPanelViews } from './scene/panelView.js';
@@ -23,6 +27,7 @@ import { syncElementViews } from './scene/architectureView.js';
 import { createViewer } from './scene/viewer.js';
 import { createAnalysisPanel } from './ui/analysisPanel.js';
 import { createArchitecturePanel } from './ui/architecturePanel.js';
+import { createMetricsPanel } from './ui/metricsPanel.js';
 import { createPropertiesPanel } from './ui/propertiesPanel.js';
 
 const $ = (id) => document.getElementById(id);
@@ -73,6 +78,36 @@ const ALL_PANEL_IDS = [
   'reliquia',
 ];
 
+/**
+ * Dados de mundo + traçados de cada painel para as métricas (T007).
+ * Eixos right/up extraídos do quaternion da malha (rotações do gizmo
+ * incluídas); largura/altura = dimensões efectivas do estado.
+ */
+function collectPanelsForAnalysis() {
+  const vRight = new THREE.Vector3(1, 0, 0);
+  const vUp = new THREE.Vector3(0, 1, 0);
+  return viewer.scene.children
+    .filter((o) => o.userData?.type === 'panel')
+    .map((mesh) => {
+      const right = vRight.clone().applyQuaternion(mesh.quaternion);
+      const up = vUp.clone().applyQuaternion(mesh.quaternion);
+      const st = mesh.userData.state;
+      return {
+        id: mesh.userData.panel.id,
+        origin: { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z },
+        right: { x: right.x, y: right.y, z: right.z },
+        up: { x: up.x, y: up.y, z: up.z },
+        width: st.width,
+        height: st.height,
+        segments: annotations.list(mesh.userData.panel.id),
+      };
+    });
+}
+
+const metricsPanel = createMetricsPanel($('metrics'), {
+  getPanels: collectPanelsForAnalysis,
+});
+
 function refreshAnalysis() {
   analysis.renderLines(
     ALL_PANEL_IDS.map((id) => ({ id })),
@@ -118,6 +153,8 @@ const viewer = createViewer($('scene'), {
     annotations.addSegment(panelId, a, b);
     annotationLayers.get(panelId)?.setSegments(annotations.list(panelId));
     analysis.updateCounts((id) => annotations.count(id));
+    // T007: traçado novo muda direcções dominantes e continuidade.
+    metricsPanel.refresh(analyzeLayout(collectPanelsForAnalysis()));
   },
 });
 
@@ -253,6 +290,8 @@ function buildScene(layoutDef) {
   refreshAnalysis();
   archPanel.setWallCount(walls.length);
   refreshArchitecture();
+  // T007: a disposição activa muda diedros e continuidade.
+  metricsPanel.refresh(analyzeLayout(collectPanelsForAnalysis()));
 }
 
 // --- Barra de ferramentas (SPEC §5.A) ---

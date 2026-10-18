@@ -170,6 +170,31 @@ def main() -> None:
             if page.locator(".element-list li").count() != 0:
                 failures.append("remover elemento não limpou a lista")
 
+            # 8. Métricas T007: desenhar duas linhas paralelas num painel e
+            #    verificar que a direcção dominante é calculada (não vazia).
+            page.click("#view-centro")
+            page.wait_for_timeout(400)
+            page.click("#toggle-draw")
+            box = page.locator("#scene").bounding_box()
+            cx, cy = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
+            page.mouse.move(cx - 50, cy - 10)
+            page.mouse.down()
+            page.mouse.move(cx + 50, cy - 10, steps=6)
+            page.mouse.up()
+            page.wait_for_timeout(200)
+            page.keyboard.press("Escape")
+            page.click("#metrics button")
+            page.wait_for_timeout(300)
+            # NOTA: usar text_content() — innerText sai vazio neste
+            # headless SwiftShader (quirk de renderização), mas o DOM
+            # tem o conteúdo correcto.
+            metrics_text = page.locator("#metrics .metrics-out").text_content() or ""
+            if "direção" not in metrics_text and "sem traçados" not in metrics_text:
+                failures.append("painel de métricas não mostrou resultados")
+            if "linha(s)" not in metrics_text:
+                failures.append("direcção dominante não calculada")
+            page.screenshot(path=OUT / "visual-check-metricas.png")
+
             browser.close()
 
         real_errors = [e for e in console_errors if "favicon" not in e]
@@ -187,7 +212,8 @@ def main() -> None:
             print(f"  - {f}")
         raise SystemExit(1)
     print("OK: cena renderiza, 6 camadas, traço cria anotação, texturas 200,")
-    print("    5 disposições renderizam, conflitos porta×painel detectados.")
+    print("    5 disposições renderizam, conflitos porta×painel detectados,")
+    print("    métricas T007 calculam (direcção dominante).")
     print(f"screenshots em {OUT}/visual-check-*.png")
 
 

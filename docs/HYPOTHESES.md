@@ -35,8 +35,12 @@ plano de verificação e estado.
      distingue H1 da hipótese da Sé, mas elimina alternativas.
   3. Distinguir H1 vs. Sé requer evidência extra-geométrica (documental,
      arqueologia da moldura, vestígios de montagem).
-- **Estado:** aberta — aguarda T007 (métrica de desvios angulares) e
-  T006 (disposições A/B) para teste; verificação documental pendente.
+- **Estado:** aberta — T006 (disposições A/B/U) e T007 (métricas:
+  diedros, continuidade transfronteira) concluídos a 2026-10-18; o
+  teste geométrico é agora **executável** pelo investigador (traçar
+  linhas → «Calcular métricas» em cada disposição). Pendente: executar
+  o teste com traçados cuidadosos e verificação documental das Cortes
+  (B002).
 - **Data:** 2026-10-18
 
 ---
@@ -74,8 +78,11 @@ plano de verificação e estado.
   teriam de ser mais curtos ou assentar acima do peitoril; as
   dimensões publicadas não o permitem. Isto enfraquece a variante C
   *tal como formulada*, mantendo-a viva apenas com painéis suspensos
-  (fora da convenção painel-de-pé, SPEC §4). Aguarda T007
-  (coplanaridade por grupo) e confronto com fontes documentais.
+  (fora da convenção painel-de-pé, SPEC §4). T007 concluído a
+  2026-10-18: coplanaridade (diedro) e continuidade transfronteira
+  entre grupos mensuráveis — o teste 2/3 é executável. Aguarda
+  traçados cuidadosos pelo investigador e confronto com fontes
+  documentais.
 - **Data:** 2026-10-18
 
 ---

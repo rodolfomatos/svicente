@@ -142,3 +142,45 @@ parede; não modelam beirais, molduras nem profundidade real de vão.
 - O protótipo **não decide** qual a disposição correcta: produz
   métricas de compatibilidade (T007) para o investigador confrontar com
   evidência documental.
+
+## 8. Métricas de análise (T007)
+
+`src/model/analysis.js`; testes com dados sintéticos em
+`tests/model/analysis.test.js`. Entradas: traçados do investigador em
+UV [0,1] (MEDIDO) + transformação de cada painel (posição, quaternion,
+dimensões efectivas).
+
+**Por painel:**
+
+- *Direcção dominante* — média circular das direcções dos traçados,
+  módulo 180° (linhas não orientadas), ponderada por comprimento UV;
+  dispersão = RMS angular. Duas linhas paralelas → dispersão ~0°;
+  ortogonais → >40°.
+- *Ponto de fuga aparente* — interseções pareadas das rectas ajustadas
+  (TLS, mínimos quadrados totais) dentro de [−2,3]² (fora = ruído);
+  centróide + RMS. Com <2 traçados: não calculável (null).
+
+**Por par de painéis vizinhos** (rectângulos a <0,75 m no plano XZ,
+corte ESTIMADO):
+
+- *Distância* entre rectângulos no pavimento.
+- *Ângulo diedro* entre faces (normais = produto vectorial dos eixos
+  mundo; 0° = coplanaridade; 60° = alas adjacentes do hexágono).
+- *Continuidade transfronteira* — para cada par de traçados que cruzam
+  a aresta comum (extremidade a <3% da largura do painel do lado do
+  vizinho): desvio angular agudo e afastamento médio entre as rectas
+  3D infinitas (projectado em `uvToWorld` com a transformação real do
+  painel). Melhor par = menor desvio angular. Cortes de leitura
+  «CONTÍNUA»: ≤5° **e** ≤0,10 m (ESTIMADOS — pontos de corte, não
+  verdades).
+
+**Leitura para as hipóteses:** (a) diedro ~0° em todos os pares +
+traçados contínuos = compatível com linha contínua (H2-A); (b) diedro
+consistente em diedro único com continuidade dentro dele = H2-B; (c)
+grupos com continuidade interna mas quebra entre grupos = H2-C; (d)
+diedro nenhum explica as linhas = enfraquece o hexágono regular (C da
+SPEC §4) a favor de reticulares (H1). Nenhum destes passos conclui —
+só restringe o espaço de hipóteses (SPEC §1).
+
+Verificação: `make visual-check` calcula direcção dominante sobre
+traçados reais da cena (screenshot `tmp/visual-check-metricas.png`).
