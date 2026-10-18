@@ -1,30 +1,133 @@
 /**
- * Ponto de entrada: compõe espaço, painéis e visor; liga a interface.
+ * Ponto de entrada: compõe espaço, painéis e visor; ligeia interface e
+ * mantém o estado de colocação de cada painel (SPEC §5).
  *
  * Disposição inicial: um painel por parede, virado para o centro — é uma
  * HIPÓTESE de partida para manipulação (SPEC §1, §5), não uma reconstrução.
  */
 import { polygonVertices } from './geometry/regularPolygon.js';
 import { wallFrame, placeOnWall } from './geometry/panelPlacement.js';
+import {
+  nearestWallIndex,
+  offsetsFromWall,
+  panelTransformFromState,
+} from './model/panelState.js';
 import { createSpace } from './scene/space.js';
 import { createAllPanelViews } from './scene/panelView.js';
 import { createViewer } from './scene/viewer.js';
+import { createPropertiesPanel } from './ui/propertiesPanel.js';
 
 const $ = (id) => document.getElementById(id);
 
-const canvas = $('scene');
 let space = null;
+let vertices = [];
 
-const viewer = createViewer(canvas, { onSelect: renderProperties });
+const properties = createPropertiesPanel($('properties'), { onEdit });
+
+const viewer = createViewer($('scene'), {
+  onSelect: (obj) => {
+    properties.show(obj);
+    properties.sync(obj);
+  },
+  onChange: (obj) => {
+    // Gizmo movido: ressincroniza estado de colocação e campos numéricos.
+    resyncState(obj);
+    properties.sync(obj);
+  },
+});
+
+/**
+ * Estado de colocação de um painel: parede associada, offsets e dimensões
+ * efectivas (podem divergir das publicadas — ajuste do investigador).
+ */
+function initState(mesh) {
+  const wallIndex = nearestWallIndex(vertices, mesh.position);
+  const { lateralOffset, distanceToWall } = offsetsFromWall(
+    vertices,
+    wallIndex,
+    mesh.position
+  );
+  mesh.userData.state = {
+    wallIndex,
+    lateralOffset,
+    distanceToWall,
+    width: mesh.userData.panel.width,
+    height: mesh.userData.panel.height,
+    faceFlipped: false,
+  };
+}
+
+/** Reaplica o estado à malha (posição/orientação via geometria pura). */
+function applyState(mesh) {
+  const st = mesh.userData.state;
+  const t = panelTransformFromState(vertices, st);
+  mesh.position.set(t.position.x, t.position.y, t.position.z);
+  mesh.rotation.y = t.rotationY;
+}
+
+/** Depois de um arrasto do gizmo, recalcula parede e offsets a partir da posição. */
+function resyncState(mesh) {
+  const st = mesh.userData.state;
+  st.wallIndex = nearestWallIndex(vertices, mesh.position);
+  const { lateralOffset, distanceToWall } = offsetsFromWall(
+    vertices,
+    st.wallIndex,
+    mesh.position
+  );
+  st.lateralOffset = lateralOffset;
+  st.distanceToWall = distanceToWall;
+}
+
+/** Edição numérica no painel de propriedades (SPEC §5.B). */
+function onEdit(field, value) {
+  const mesh = viewer.selected;
+  if (!mesh) return;
+  const st = mesh.userData.state;
+  switch (field) {
+    case 'positionX':
+      mesh.position.x = value;
+      resyncState(mesh);
+      break;
+    case 'positionZ':
+      mesh.position.z = value;
+      resyncState(mesh);
+      break;
+    case 'positionY':
+      mesh.position.y = value; // altura livre (ex.: degrau), mantida até applyState
+      break;
+    case 'rotationDeg':
+      mesh.rotation.y = (value * Math.PI) / 180;
+      break;
+    case 'width':
+    case 'height':
+      st[field] = value; // ajuste do investigador (HIPÓTESE)
+      applyState(mesh);
+      break;
+    case 'distanceToWall':
+      st.distanceToWall = value;
+      applyState(mesh);
+      break;
+    case 'wallIndex':
+      st.wallIndex = value;
+      applyState(mesh);
+      break;
+    case 'faceFlipped':
+      st.faceFlipped = value === 1;
+      applyState(mesh);
+      break;
+    default:
+      return;
+  }
+  properties.sync(mesh);
+}
 
 function buildScene(radiusM) {
   if (space) viewer.scene.remove(space.group);
   space = createSpace({ sides: 6, radius: radiusM, height: 3 });
   viewer.scene.add(space.group);
 
-  const vertices = polygonVertices({ sides: 6, radius: radiusM });
-  const views = createAllPanelViews();
-  views.forEach((mesh, i) => {
+  vertices = polygonVertices({ sides: 6, radius: radiusM });
+  createAllPanelViews().forEach((mesh, i) => {
     const frame = wallFrame(vertices, i);
     const { position, rotationY } = placeOnWall({
       frame,
@@ -35,6 +138,7 @@ function buildScene(radiusM) {
     mesh.position.set(position.x, position.y, position.z);
     mesh.rotation.y = rotationY;
     viewer.scene.add(mesh);
+    initState(mesh);
   });
   toggleLayers();
 }
@@ -69,35 +173,6 @@ function toggleLayers() {
 ['show-walls', 'show-floor', 'show-grid', 'show-axes'].forEach((id) =>
   $(id).addEventListener('change', toggleLayers)
 );
-
-// --- Painel de propriedades (leitura; edição numérica em T003) ---
-function renderProperties(obj) {
-  const fields = $('props-fields');
-  const prov = $('props-provenance');
-  const hint = document.querySelector('#properties .hint');
-  if (!obj || obj.userData.type !== 'panel') {
-    fields.hidden = true;
-    prov.hidden = true;
-    hint.hidden = false;
-    return;
-  }
-  hint.hidden = true;
-  fields.hidden = false;
-  prov.hidden = false;
-  const { panel } = obj.userData;
-  const rows = [
-    ['Painel', panel.name],
-    ['ID', panel.id],
-    ['Dimensões', `${panel.width} × ${panel.height} m`],
-    ['Posição X', `${obj.position.x.toFixed(3)} m`],
-    ['Posição Y', `${obj.position.y.toFixed(3)} m`],
-    ['Posição Z', `${obj.position.z.toFixed(3)} m`],
-    ['Rotação Y', `${((obj.rotation.y * 180) / Math.PI).toFixed(1)}°`],
-    ['Fonte dimensões', panel.source.label],
-  ];
-  fields.innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
-  prov.textContent = panel.provenance;
-}
 
 // --- Arranque ---
 buildScene(3);

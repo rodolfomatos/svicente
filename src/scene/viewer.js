@@ -8,9 +8,10 @@ import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
 /**
  * @param {HTMLCanvasElement} canvas
- * @param {{onSelect?: (obj: THREE.Object3D|null) => void}} [opts]
+ * @param {{onSelect?: (obj: THREE.Object3D|null) => void,
+ *          onChange?: (obj: THREE.Object3D) => void}} [opts]
  */
-export function createViewer(canvas, { onSelect } = {}) {
+export function createViewer(canvas, { onSelect, onChange } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -40,6 +41,9 @@ export function createViewer(canvas, { onSelect } = {}) {
   const transform = new TransformControls(persp, canvas);
   transform.addEventListener('dragging-changed', (e) => {
     orbit.enabled = !e.value;
+  });
+  transform.addEventListener('objectChange', () => {
+    if (selected) onChange?.(selected);
   });
   scene.add(transform);
 

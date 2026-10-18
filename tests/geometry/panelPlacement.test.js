@@ -17,7 +17,9 @@ describe('wallFrame', () => {
       const f = wallFrame(V, i);
       expect(Math.hypot(f.inward.x, f.inward.z)).toBeCloseTo(1, 9);
       // produto escalar positivo com a direção midpoint→centro
-      expect(f.inward.x * -f.midpoint.x + f.inward.z * -f.midpoint.z).toBeGreaterThan(0);
+      expect(f.inward.x * -f.midpoint.x + f.inward.z * -f.midpoint.z).toBeGreaterThan(
+        0
+      );
     }
   });
 
@@ -47,7 +49,10 @@ describe('placeOnWall', () => {
   test('distanceToWall desloca para dentro, ao longo da normal', () => {
     const d = 0.25;
     const { position } = placeOnWall({
-      frame, panelWidth: W, panelHeight: H, distanceToWall: d,
+      frame,
+      panelWidth: W,
+      panelHeight: H,
+      distanceToWall: d,
     });
     const dist = Math.hypot(position.x, position.z);
     expect(dist).toBeCloseTo(3 - d, 9); // mais perto do centro
@@ -56,7 +61,10 @@ describe('placeOnWall', () => {
   test('lateralOffset desloca ao longo da parede (painel não ocupa parede inteira)', () => {
     const off = 0.3;
     const { position } = placeOnWall({
-      frame, panelWidth: W, panelHeight: H, lateralOffset: off,
+      frame,
+      panelWidth: W,
+      panelHeight: H,
+      lateralOffset: off,
     });
     // perpendicular à normal: deslocação puramente tangencial, logo
     // distância ao centro = hipotenusa sqrt(3² + off²)

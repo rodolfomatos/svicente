@@ -82,7 +82,12 @@ describe('Validação de entradas', () => {
   });
 
   test('wallSegments exige >= 3 vértices', () => {
-    expect(() => wallSegments([{ x: 0, z: 0 }, { x: 1, z: 0 }])).toThrow();
+    expect(() =>
+      wallSegments([
+        { x: 0, z: 0 },
+        { x: 1, z: 0 },
+      ])
+    ).toThrow();
   });
 });
 

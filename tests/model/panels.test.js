@@ -1,7 +1,12 @@
 /**
  * Testes do modelo dos painéis (SPEC §3, §8).
  */
-import { PANELS, PROVENANCE, PUBLISHED_DIMENSIONS_NOTE, getPanel } from '../../src/model/panels.js';
+import {
+  PANELS,
+  PROVENANCE,
+  PUBLISHED_DIMENSIONS_NOTE,
+  getPanel,
+} from '../../src/model/panels.js';
 
 describe('Painéis de São Vicente (SPEC §3)', () => {
   test('existem exactamente os seis painéis, com identificadores estáveis', () => {
