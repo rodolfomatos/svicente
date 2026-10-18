@@ -1,25 +1,17 @@
 # Personas
 
-## User
+## User — Investigador histórico-artístico
 
-**Profile:** [Describe your user]
+- Estuda o Políptico de São Vicente e a sua disposição original no Mosteiro
+  da Batalha; não é programador.
+- Precisa de formular hipóteses espaciais, medir coerência geométrica entre
+  painéis e documentar a proveniência de cada dado.
+- Exige rigor: quer que a ferramenta distinga sempre o documentado do
+  hipotético e nunca apresente visualizações como prova.
+- Trabalha por sessões: precisa de guardar cenários e retomar depois,
+  exportando dados reproduzíveis.
 
-**Goals:**
-- Goal 1
-- Goal 2
+## User — Investigador auxiliar / revisor
 
-**Pain Points:**
-- Pain 1
-- Pain 2
-
-## Maintainer
-
-**Profile:** Engineer maintaining this codebase
-
-**Goals:**
-- Keep code clean and documented
-- Ensure quality without friction
-
-**Tools:**
-- AES (Ambrósio Engineering System)
-- `make check` for validation
+- Recebe os JSON exportados e os cenários; precisa de reproduzir medições e
+  verificar se as conclusões se seguem dos parâmetros guardados.

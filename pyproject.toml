@@ -1,0 +1,16 @@
+# Configuração Python — scripts auxiliares de medições/análise (SPEC §2).
+# A aplicação web é JavaScript; Python existe apenas para análise numérica
+# fora do navegador (ex.: processamento de medições exportadas).
+
+[project]
+name = "svicente-analysis"
+version = "0.1.0"
+description = "Scripts de análise numérica do Laboratório Espacial 3D (Painéis de São Vicente)"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["analysis/tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

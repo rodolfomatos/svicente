@@ -1,7 +1,7 @@
 /**
  * Main entry point tests
  */
-const { main } = require('../src/index.js');
+import { main } from '../src/index.js';
 
 describe('Main entry point', () => {
   test('main function exists and runs without error', () => {

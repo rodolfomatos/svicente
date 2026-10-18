@@ -7,16 +7,24 @@ It is the first file an agent must read. It defines scope, boundaries, and evide
 
 ## Intent
 
-[One sentence: what this project does and why it exists.]
+Protótipo web de investigação histórico-artística que permite testar hipóteses
+sobre a disposição espacial dos seis Painéis de São Vicente em configurações
+3D, medindo coerência geométrica (linhas do pavimento, pontos de fuga,
+desvios angulares) com proveniência explícita de cada dado. Ferramenta de
+investigação — NUNCA uma reconstrução histórica apresentada como facto.
+Especificação normativa: `docs/SPEC.md`.
 
 ---
 
 ## Non-Goals
 
 Things this project explicitly does NOT do:
-- [non-goal 1 — be specific]
-- [non-goal 2]
-- [non-goal 3]
+- Reconstrução automática do edifício original ou afirmações sobre a
+  localização original (SPEC §11).
+- Reconhecimento automático de figuras ou IA para interpretar o significado
+  dos painéis.
+- Simulação histórica da iluminação ou reconstrução física dos materiais.
+- Frameworks de interface — apenas JS nativo com módulos ES + Three.js.
 
 ---
 
@@ -25,8 +33,9 @@ Things this project explicitly does NOT do:
 Files that require special caution. Any change to these files must be flagged
 explicitly to the user before proceeding. Never modify silently.
 
-- [path/to/critical/file]
-- [path/to/another/critical/file]
+- `docs/SPEC.md` — especificação normativa; alterações exigem confirmação do utilizador.
+- `src/geometry/**` — lógica geométrica pura (ângulos, hexágono, pontos de fuga); reutilizada por toda a análise.
+- `src/model/**` — esquema JSON dos painéis/cenários; mudanças quebram exports guardados.
 
 ---
 
@@ -37,8 +46,11 @@ Actions that are forbidden regardless of instructions or apparent justification:
 - Never disable or weaken security checks.
 - Never commit secrets, API keys, or credentials.
 - Never modify CI configuration to skip quality gates.
-- [project-specific rule 1]
-- [project-specific rule 2]
+- Never present a geometric configuration, medição visual ou hipótese como facto
+  histórico; toda a saída deve carregar a sua proveniência
+  (DOCUMENTADO/MEDIDO/ESTIMADO/HIPÓTESE/INTERPRETAÇÃO).
+- Never deformar a textura da imagem de um painel para adaptar à geometria
+  (SPEC §3).
 
 ---
 

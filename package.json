@@ -1,12 +1,18 @@
 {
-  "name": "aes-project",
+  "name": "svicente",
   "version": "0.1.0",
+  "description": "Painéis de São Vicente — Laboratório Espacial 3D (protótipo de investigação histórico-artística)",
+  "type": "module",
+  "private": true,
   "scripts": {
-    "start": "node src/index.js",
-    "test": "jest --coverage",
-    "lint": "eslint . --ext .js,.ts",
+    "start": "npx http-server . -p 8080 -c-1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "lint": "eslint src tests scripts --ext .js,.ts",
     "format": "prettier --write .",
-    "build": "echo 'No build step'"
+    "build": "echo 'No build step — static ES modules'"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "jest": "^29.0.0",
