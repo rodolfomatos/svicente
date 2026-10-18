@@ -18,7 +18,7 @@ Prioridades: Impact (H/M/L) · Effort (S/M/L) · Priority (P1/P2/P3) · Status.
 | T008 | Cenários nomeados A/B/C/D, persistência LocalStorage, export/import JSON completo | H | M | P2 | done |
 | T009 | Comparação perspetiva/ortográfica, posições de câmara guardadas | M | S | P3 | pending |
 | T010 | Exportação: imagem da vista, tabela de medições, anotações por painel, versão+parâmetros | M | S | P3 | pending |
-| T011 | Texturas v3: substituir bases GIMP pelas digitalizações sem moldura do Commons (Google Arts & Culture/MNAA, domínio público, até 4727×7713 px, proporções ~dimensões publicadas) — nova cadeia de proveniência no manifest | H | M | P2 | pending |
+| T011 | Texturas v3: substituir bases GIMP pelas digitalizações sem moldura do Commons (Google Arts & Culture/MNAA, domínio público, até 4727×7713 px, proporções ~dimensões publicadas) — nova cadeia de proveniência no manifest | H | M | P2 | in-progress |
 
 ### Backlog
 

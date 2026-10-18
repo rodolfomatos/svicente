@@ -75,3 +75,63 @@ export function placeOnWall({
   const rotationY = Math.atan2(frame.inward.x, frame.inward.z);
   return { position, rotationY };
 }
+
+/**
+ * Distribui painéis lado a lado ao longo de paredes, sem sobreposição.
+ *
+ * Regras:
+ * - Disposições fechadas (n paredes === n painéis): um painel por parede,
+ *   centrado no ponto médio da parede (lateralOffset = 0).
+ * - Disposições abertas (n paredes < n painéis): os painéis são
+ *   distribuídos pelas paredes (proporcionalmente, resto nas primeiras),
+ *   lado a lado dentro de cada parede, com o bloco centrado no ponto
+ *   médio de cada parede.
+ *
+ * Devolve um array de {wallIndex, lateralOffset} na mesma ordem de
+ * `panels`. `lateralOffset` está em metros ao longo da tangente da
+ * parede a partir do seu ponto médio (positivo na direção da tangente).
+ *
+ * Geometria pura, sem Three.js. Testável.
+ *
+ * @param {ReturnType<typeof frameFromSegment>[]} walls
+ * @param {{width: number}[]} panels painéis na ordem de colocação pretendida
+ * @returns {{wallIndex: number, lateralOffset: number}[]}
+ */
+export function distributePanelsAlongWalls(walls, panels) {
+  const nPanels = panels.length;
+  const nWalls = walls.length;
+  const result = new Array(nPanels);
+
+  const wallLen = (w) => Math.hypot(w.b.x - w.a.x, w.b.z - w.a.z);
+
+  if (nWalls === nPanels) {
+    for (let i = 0; i < nPanels; i++) result[i] = { wallIndex: i, lateralOffset: 0 };
+    return result;
+  }
+
+  // Quantos painéis por parede (distribuição proporcional, resto nas primeiras paredes).
+  const base = Math.floor(nPanels / nWalls);
+  const remainder = nPanels % nWalls;
+
+  let panelCursor = 0;
+  for (let wi = 0; wi < nWalls; wi++) {
+    let count = base + (wi < remainder ? 1 : 0);
+    if (count === 0) continue;
+
+    let totalW = 0;
+    for (let j = 0; j < count; j++) totalW += panels[panelCursor + j].width;
+
+    // Bloco centrado no ponto médio da parede.
+    let cursor = -totalW / 2; // ao longo da tangente a partir do ponto médio
+    for (let j = 0; j < count; j++) {
+      const p = panels[panelCursor + j];
+      result[panelCursor + j] = {
+        wallIndex: wi,
+        lateralOffset: cursor + p.width / 2,
+      };
+      cursor += p.width;
+    }
+    panelCursor += count;
+  }
+  return result;
+}

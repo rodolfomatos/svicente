@@ -105,17 +105,23 @@ parede; não modelam beirais, molduras nem profundidade real de vão.
   gizmo, `faceFlipped`) arrasta as anotações — critério de aceitação 7.
 - Persistência por painel em LocalStorage (SPEC §9).
 
-## 5. Texturas e proveniência de imagens (T004v2)
+## 5. Texturas e proveniência de imagens (T004v2 → T011 v3)
 
-- Texturas geradas por `analysis/crop_panels.py` a partir de recortes do
-  investigador (GIMP, correção de perspectiva, remoção de molduras,
-  2026-10-18), sobre fotografia de Villafruela (2014, CC BY-SA 3.0).
-- `assets/images/panels/manifest.json` (v2) regista a cadeia completa:
-  fonte → edição do investigador → textura; classificação MEDIDO com
-  nota de perspectiva residual (objective 19 mm; deltas de proporção
-  0,7–5,0% vs. tabelas publicadas).
-- As texturas nunca são deformadas pela aplicação; alterações de
-  largura/altura são ajustes explícitos do investigador (HIPÓTESE).
+### 5.1 Pipeline v3 (digitalizações sem moldura, PD)
+- **Fonte documental:** digitalizações retificadas dos seis painéis, sem moldura, publicadas no Wikimedia Commons — Google Arts & Culture / Museu Nacional de Arte Antiga (MNAAT). Todos em domínio público (PD-Art).
+- **Geração:** `analysis/build_textures_v3.py` descarrega as PNGs para `assets/images/source-v3/` (gitignorado, 46–77 MB cada), verifica licença e proporções, redimensiona para altura máxima 2048 px (Lanczos), converte a JPEG 90 e guarda em `assets/images/panels/*.jpg`. É reprodutível (`--force` regenera).
+- **Cadeia de proveniência:** Google Arts & Culture/MNAAT (via Commons, PD) → redimensionamento determinístico → texturas web.
+- **Classificação:** DOCUMENTADO (metadados Commons), MEDIDO (dimensões originais + deltas de proporção). O procedimento é determinístico (o script é a fonte de transformação). O manifesto completo está em `assets/images/panels/manifest.json` (schema `svicente-images-v3`), com `supersedes: svicente-images-v2`; o manifesto v2 foi preservado em `assets/images/panels/manifest-v2.json` (cadeia GIMP).
+- **Deltas de proporção:** comparados às dimensões publicadas (SPEC §3) — MEDIDO. Valores: Infante -0,04%, Relíquia -0,26%, Frades -5,27%, Arcebispo -0,10%, Cavaleiros +6,74%, Pescadores -6,27%. Estes deltas resultam do ajuste entre digitalização e rectângulo publicado normativo; a textura estica ligeiramente para caber na geometria do modelo (dimensões publicadas mantêm-se invariantes).
+- **Caveat:** a digitalização não declara explicitamente «pré/restauro» recente; as datas do documento continuam: painel de Nuno Gonçalves, séc. XV (dendrocronologia: c. 1445). Os limites de recorte da v2 (moldura corrigida, residual 19 mm) não aplicam à v3 — o artigo científico deve registar ambos os caminhos metodológicos se referido.
+
+### 5.2 Observações sobre a escolha
+- Os PNGs sem moldura eliminam a necessidade de correcção de perspectiva manual; com isto, a maioria das proporções casam quase exactamente com as dimensões publicadas. Os restantes 5–7% não justificam deformação da imagem; registam-se como caveat e preserva-se a geometria normativa (SPEC §3).
+- Anotações UV são relativas à textura activa — mudar para v3 é apropriado antes de existirem anotações reais do investigador (T010–T011 feito neste momento).
+
+#### 5.3 Histórico: pipeline v2 (preservado)
+- Fonte: fotografia de Daniel Villafruela (Wikimedia Commons, 2014-09-17, CC BY-SA 3.0). Recorte, correcção de perspectiva e remoção de molduras (GIMP), por acção do investigador (2026-10-18), sobre a fotografia. Limites de recorte ESTIMADOS (proporção de larguras publicadas). Residual objectivo 19 mm.
+- Registo completo no manifesto v2 histórico (não é mais a textura em uso).
 
 ## 6. Verificação
 

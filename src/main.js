@@ -12,7 +12,8 @@
  * §9) como EXPERIMENTOS nomeados no LocalStorage + JSON exportável.
  */
 import * as THREE from 'three';
-import { placeOnWall } from './geometry/panelPlacement.js';
+import { placeOnWall, distributePanelsAlongWalls } from './geometry/panelPlacement.js';
+import { PANELS } from './model/panels.js';
 import {
   nearestWallIndex,
   offsetsFromWall,
@@ -259,6 +260,15 @@ function onEdit(field, value) {
 
 function buildScene(layoutDef) {
   if (space) viewer.scene.remove(space.group);
+  // Remove any existing panel meshes from previous layout build
+  for (const mesh of panelMeshes()) {
+    // Remove annotation layer group from mesh and dispose via stored layer if present
+    viewer.scene.remove(mesh);
+  }
+  for (const layer of annotationLayers.values()) {
+    try { layer.dispose(); } catch (_) {}
+  }
+  annotationLayers.clear();
   layout = layoutDef;
   walls = layoutDef.walls;
 
@@ -272,15 +282,19 @@ function buildScene(layoutDef) {
     boundsRadius,
   });
   viewer.scene.add(space.group);
-
-  for (const layer of annotationLayers.values()) layer.dispose();
-  annotationLayers.clear();
+  // Distribuição dos painéis ao longo das paredes (lado a lado, sem
+  // sobreposição). Em disposições fechadas (hexagono/irregular: 6 paredes,
+  // 6 painéis) → um por parede centrado; em abertas (plana/angular/u) →
+  // lado a lado ao longo das paredes, bloco centrado por parede.
+  const placement = distributePanelsAlongWalls(walls, PANELS);
   createAllPanelViews().forEach((mesh, i) => {
-    const frame = walls[i % walls.length];
+    const { wallIndex, lateralOffset } = placement[i];
+    const frame = walls[wallIndex];
     const { position, rotationY } = placeOnWall({
       frame,
       panelWidth: mesh.userData.panel.width,
       panelHeight: mesh.userData.panel.height,
+      lateralOffset,
       distanceToWall: 0.05, // folga mínima entre painel e parede
     });
     mesh.position.set(position.x, position.y, position.z);

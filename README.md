@@ -336,7 +336,7 @@ Estado actual (2026-10-18):
 | T008 Cenários nomeados + export/import | done    |
 | T009 Câmaras guardadas                 | pending |
 | T010 Exportações para o artigo         | pending |
-| T011 Texturas v3 (digitalizações PD)   | pending |
+| T011 Texturas v3 (digitalizações PD)   | in-progress |
 
 ---
 
