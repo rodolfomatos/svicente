@@ -34,6 +34,7 @@ current_ticket: ""
 | T001 | Modelo de dados + geometria pura (painéis, hexágono 120°, raio 3 m) |
 | T002 | Cena Three.js: painéis texturados, paredes, navegação orbital |
 | T003 | Painel de propriedades com edição numérica + vistas predefinidas |
+| T004 | Imagens dos painéis + metadados de proveniência e licença |
 
 ## Blocked
 
