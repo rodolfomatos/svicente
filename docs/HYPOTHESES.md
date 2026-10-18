@@ -6,6 +6,44 @@ plano de verificação e estado.
 
 ---
 
+## H0 — Disposição corrente: cena única contínua na ordem do museu (nulo)
+
+- **Classificação:** HIPÓTESE (é a hipótese **aceite/standard**, mas o
+  artigo admite que "permanece a dúvida quanto ao seu ordenamento" —
+  não é facto)
+- **Autor:** tradição museológica (ordem proposta por José de Bragança
+  e Almada Negreiros, apresentada publicamente desde 1940 no MNAAT)
+- **Enunciado:** os seis painéis formam uma **cena única contínua**, na
+  ordem hoje exposta no MNAAT (Infante–Arcebispo–Cavaleiros–Frades–
+  Relíquia–Pescadores), com continuidade perspetiva do pavimento entre
+  todos os pares adjacentes.
+- **Evidência a favor:** argumento da perspetiva dos ladrilhos do chão
+  (José de Bragança e Almada Negreiros); ordem adoptada pelo museu desde
+  1940; restauro de 1909 (Luciano Freire) identificou a composição (2
+  grandes + 4 meias-portas) sem objeção à leitura de cena única.
+- **Evidência contra (conhecida):** o ordenamento nunca foi
+  arqueologicamente demonstrado (Seruca 2013, pp. 24–25, citado via
+  Wikipedia PT); Fernando Branco (2018/2020) afirma ser "impossibilidade,
+  nunca explicada, da sua actual disposição numa cena única" e propõe
+  H3; a continuidade perspetiva do pavimento alegada é um argumento
+  visual, não um registo de montagem.
+- **Teste geométrico no protótipo (executável):**
+  1. Disposição **plana (A)** com a ordem do museu; traçar as linhas do
+     pavimento em todos os 5 pares de fronteira.
+  2. H0 exige continuidade em **todos** os 5 pares (T007: diedro ~0° e
+     deslocamento transfronteira ≤ tolerância).
+  3. Uma **fratura sistemática** numa fronteira (padrão C, T007 §8)
+     enfraquece a cena única; uma fratura isolada pode ser ruído de
+     traçado (repetir traçados).
+- **Estado:** aberta — teste executável hoje no protótipo (T007).
+  Aguarda traçados cuidadosos pelo investigador.
+- **Proveniência:** DOCUMENTADO (fonte secundária: Wikipedia PT
+  "Painéis de São Vicente de Fora", com refs. a Seruca 2013 pp. 24–25;
+  verificação primária = consulta dessas fontes, pendente).
+- **Data:** 2026-10-18
+
+---
+
 ## H1 — Painéis destinados a decoração de uma Cortes (estrutura temporária)
 
 - **Classificação:** HIPÓTESE
@@ -14,17 +52,25 @@ plano de verificação e estado.
   estrutura temporária de corte (tenda/tribuna/dossel) associada a uma
   Cortes de Santarém que não chegou a realizar-se, e não (ou não apenas)
   para arquitetura permanente.
-- **Evidência a favor:** datação c. 1470–1480 coincide com o reinado de
-  D. Afonso V; iconografia processional/coletiva com leitura cenográfica.
-- **Evidência contra (conhecida):** hipótese dominante = retábulo da
-  capela-mor da Sé de Lisboa (MNAAT); Cortes de Santarém 1451
-  **realizou-se** (verificável em fontes sobre Cortes de Afonso V);
-  estruturas temporárias exigiriam faces não visíveis pintadas de forma
-  diferente; painéis com molduras de uso duradouro.
-- **Ponto em aberto documental:** confirmar se existiu convocatória de
-  Cortes nos anos 1470 que não se concretizou (não localizado em busca
-  inicial 2026-10-18; fonte primária necessária: Documentos de D.
-  Afonso V / cancilleria).
+- **Evidência a favor:** iconografia processional/coletiva com leitura
+  cenográfica; a encomenda real poderia ter sido de D. Afonso V já
+  reinando (documental, a verificar).
+- **Evidência contra (conhecida):** **a premissa de datação colapsou** —
+  a dendrocronologia (Peter Klein, Univ. de Hamburgo, sobre o carvalho
+  do Báltico dos painéis) apoia datação **c. 1445** (tese de Almeida e
+  Barroso de Albuquerque, 2000) e Branco (2018/2020) situa a pintura em
+  1443–1448; a datação 1470–1480 é a estimativa **oficiosa de 1882**,
+  hoje superada (Wikipedia PT + fontes citadas; verificação primária
+  pendente). Cortes de Santarém 1451 **realizou-se**; estruturas
+  temporárias exigiriam faces não visíveis pintadas de forma diferente;
+  painéis com molduras de uso duradouro. Se os painéis são de c. 1445,
+  a hipótese das Cortes dos anos 1470 é **inconsistente com a datação
+  dendrocronológica** a menos que se reenuncie para os anos 1440
+  (Cortes/D. Pedro regente — ver H3).
+- **Ponto em aberto documental:** a hipótese tal como enunciada dependia
+  da datação 1470–1480; **reformulação necessária** para os anos 1440
+  ou arquivamento face a H3 (Batalha/D. Pedro, mesma janela cronológica
+  com encomenda documental hipotética).
 - **Teste geométrico no protótipo:**
   1. Se H1 (ou hipótese da Sé) for de estrutura reticular → as linhas do
      pavimento devem ser compatíveis com disposição **plana (A)** ou
@@ -84,6 +130,67 @@ plano de verificação e estado.
   traçados cuidadosos pelo investigador e confronto com fontes
   documentais.
 - **Data:** 2026-10-18
+
+---
+
+## H3 — Painéis destinados ao Mosteiro da Batalha (Capela do Fundador)
+
+- **Classificação:** HIPÓTESE (publicada, não consenso)
+- **Autor:** Fernando Branco — investigação de 2018, livro *Os Novos
+  Painéis de S. Vicente* (2020)
+- **Enunciado:** os painéis foram pintados entre 1443 e 1448,
+  provavelmente a pedido do Infante D. Pedro (regente, testamenteiro do
+  Infante Santo), e destinar-se-iam ao **Mosteiro da Batalha**, junto
+  ao túmulo do Infante D. Pedro (Capela do Fundador).
+- **Evidência a favor:** leitura dos seis painéis como seis quadros
+  cronológicos da Crónica do Infante Santo (Frei João Álvares): Tânger
+  1437 → Glorificação pós-1443; coerente com a dendrocronologia (c.
+  1445, Klein); os **jogos de luz e sombra da parede Norte da Capela do
+  Fundador coincidem** com os pintados nos painéis (afirmação de fonte
+  secundária — verificação medições próprias pendente).
+- **Evidência contra (conhecida):** não consenso da tradição
+  museológica (H0); a coincidência luz/sombra não foi reproduzida
+  mediçionalmente neste projeto; identificação iconográfica contestada
+  (ex.: figura do chapeirão).
+- **Teste geométrico no protótipo:**
+  1. Modelar a Capela do Fundador (Batalha) como espaço + restrições
+     (B004) — requer **cotas documentais da capela** (pesquisa
+     documental pendente).
+  2. Verificar se alguma disposição do catálogo (A/B/C/D) é compatível
+     com o vão e com a posição do túmulo, e se a luz/painel é coerente
+     com a orientação Norte (análise de luz = fora do âmbito atual).
+  3. Compatibilidade ≠ confirmação; incompatibilidade enfraqueceria H3.
+- **Estado:** aberta — sem cotas da capela ainda; o protótipo tem a
+  maquinaria (espaços + restrições) para o teste quando houver dados.
+- **Proveniência:** DOCUMENTADO (fonte secundária: Wikipedia PT com ref.
+  ao livro de Fernando Branco, 2020; verificação primária = livro,
+  pendente).
+- **Data:** 2026-10-18
+
+---
+
+## Observações documentais que restringem disposições
+
+Factos (não hipóteses) que qualquer disposição testável deve
+respeitar. Todos via fonte secundária (Wikipedia PT + refs.); verificação
+primária pendente.
+
+1. **Meias-portas (1909, Luciano Freire):** o restauro mostrou que 2 dos
+   painéis resultam da junção de duas peças — há **2 painéis grandes e
+   4 painéis mais pequenos correspondentes a meias-portas**. Implicação
+   para disposições: os 4 estreitos poderiam ser **folhas de porta em
+   pares** (~1,2 m de vão por par) — testável no protótipo como
+   adjacência obrigatória de pares (ex.: Frades+Pescadores) ou como
+   vanos de porta em H2.
+2. **Ordem de 1940:** a ordem atual é a proposta por José de Bragança e
+   Almada Negreiros (perspetiva dos ladrilhos), apresentada publicamente
+   pela primeira vez em 1940; antes, em 1910, foi exibida em 2 trípticos
+   — a ordem é uma **proposta de leitura**, não um registo de montagem.
+3. **Descoberta (1882):** os painéis apareceram no Paço Patriarcal de
+   São Vicente de Fora (não há registo de local de montagem original).
+4. **Datação:** dendrocronologia (Peter Klein) sobre carvalho do Báltico
+   apoia **c. 1445**; a datação 1470–1480 é estimativa oficiosa de 1882,
+   hoje superada (ver H1/H3).
 
 ---
 
