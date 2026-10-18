@@ -89,9 +89,7 @@ export function distanceToCenter(point, center = { x: 0, z: 0 }) {
  */
 export function apothemDeviation(vertices, radius, center = { x: 0, z: 0 }) {
   const mids = wallSegments(vertices).map((w) => w.midpoint);
-  return Math.max(
-    ...mids.map((m) => Math.abs(distanceToCenter(m, center) - radius))
-  );
+  return Math.max(...mids.map((m) => Math.abs(distanceToCenter(m, center) - radius)));
 }
 
 export const METRIC_TOLERANCE_M = TOLERANCE_M;

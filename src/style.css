@@ -1,0 +1,151 @@
+/* Paleta e tipografia conforme FR-D2/FR-D3 (AES Design System). Sem emojis. */
+
+:root {
+  --bg: #0a0a0a;
+  --surface: #171717;
+  --border: #262626;
+  --text: #fafafa;
+  --muted: #737373;
+  --accent: #22c55e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font:
+    400 14px Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+}
+
+#toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+#toolbar .brand {
+  font-weight: 600;
+  margin-right: 8px;
+}
+#toolbar .sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+}
+#toolbar label {
+  color: var(--muted);
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+#toolbar input[type='number'] {
+  width: 64px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+#toolbar button,
+#toolbar select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font: inherit;
+}
+
+#toolbar button:hover {
+  border-color: var(--muted);
+}
+#toolbar button[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+#layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 260px;
+  height: calc(100% - 49px);
+}
+
+aside {
+  background: var(--surface);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+#properties {
+  border-right: 1px solid var(--border);
+}
+#analysis {
+  border-left: 1px solid var(--border);
+}
+
+aside h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+aside .hint {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+#props-fields dt {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+#props-fields dd {
+  margin: 2px 0 0;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.provenance {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 2px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+#viewport {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#scene {
+  flex: 1;
+  width: 100%;
+  display: block;
+}
+
+#viewport-note {
+  margin: 0;
+  padding: 6px 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}

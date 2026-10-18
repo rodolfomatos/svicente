@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>svicente — Painéis de São Vicente, Laboratório Espacial 3D</title>
+    <link rel="stylesheet" href="./src/style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./node_modules/three/build/three.module.js",
+          "three/addons/": "./node_modules/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <header id="toolbar">
+      <span class="brand">Laboratório Espacial 3D — Painéis de São Vicente</span>
+
+      <select id="config-select" title="Configuração espacial">
+        <option value="hexagon">Hexágono regular (raio 3 m)</option>
+      </select>
+      <label
+        >Raio (m) <input id="radius-input" type="number" min="0.5" step="0.1" value="3"
+      /></label>
+
+      <span class="sep"></span>
+      <button id="view-frontal" type="button">Frontal</button>
+      <button id="view-superior" type="button">Superior</button>
+      <button id="view-lateral" type="button">Lateral</button>
+      <button id="view-centro" type="button">Centro do espaço</button>
+      <button id="toggle-proj" type="button" aria-pressed="false">Ortográfica</button>
+
+      <span class="sep"></span>
+      <label><input id="show-walls" type="checkbox" checked /> Paredes</label>
+      <label><input id="show-floor" type="checkbox" checked /> Pavimento</label>
+      <label><input id="show-grid" type="checkbox" checked /> Grelha</label>
+      <label><input id="show-axes" type="checkbox" checked /> Eixos</label>
+    </header>
+
+    <main id="layout">
+      <aside id="properties" aria-label="Painel de propriedades">
+        <h2>Propriedades</h2>
+        <p class="hint">Seleccione um painel na vista 3D.</p>
+        <dl id="props-fields" hidden></dl>
+        <p id="props-provenance" class="provenance" hidden></p>
+      </aside>
+
+      <section id="viewport">
+        <canvas id="scene"></canvas>
+        <p id="viewport-note">
+          Ferramenta de investigação — nenhuma configuração aqui representa uma
+          reconstrução histórica comprovada (SPEC §1, §8).
+        </p>
+      </section>
+
+      <aside id="analysis" aria-label="Painel de análise">
+        <h2>Análise</h2>
+        <p class="hint">
+          Camadas analíticas ficam disponíveis em T005/T007 (linhas do pavimento, pontos
+          de fuga).
+        </p>
+        <ul id="analysis-layers"></ul>
+      </aside>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

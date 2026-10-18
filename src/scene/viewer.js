@@ -1,0 +1,154 @@
+/**
+ * Visor 3D: renderer, câmara perspectiva/ortográfica, OrbitControls,
+ * TransformControls, seleção por clique e vistas predefinidas (SPEC §5.A).
+ */
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+
+/**
+ * @param {HTMLCanvasElement} canvas
+ * @param {{onSelect?: (obj: THREE.Object3D|null) => void}} [opts]
+ */
+export function createViewer(canvas, { onSelect } = {}) {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0a0a);
+  const aspect = () => canvas.clientWidth / canvas.clientHeight || 1;
+
+  const persp = new THREE.PerspectiveCamera(50, aspect(), 0.05, 100);
+  persp.position.set(0, 2, 8);
+
+  const ORTHO_HALF = 5; // meia-extensão em metros
+  const ortho = new THREE.OrthographicCamera(
+    -ORTHO_HALF,
+    ORTHO_HALF,
+    ORTHO_HALF,
+    -ORTHO_HALF,
+    0.05,
+    100
+  );
+  ortho.position.copy(persp.position);
+  let active = persp;
+
+  const orbit = new OrbitControls(persp, canvas);
+  orbit.enableDamping = true;
+  orbit.target.set(0, 1.2, 0);
+
+  const transform = new TransformControls(persp, canvas);
+  transform.addEventListener('dragging-changed', (e) => {
+    orbit.enabled = !e.value;
+  });
+  scene.add(transform);
+
+  // --- Seleção por clique (raycast nos painéis) ---
+  const raycaster = new THREE.Raycaster();
+  const pointer = new THREE.Vector2();
+  let downPos = null;
+  let selected = null;
+
+  function select(obj) {
+    selected = obj;
+    onSelect?.(obj);
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    downPos = { x: e.clientX, y: e.clientY };
+  });
+  canvas.addEventListener('pointerup', (e) => {
+    if (!downPos) return;
+    const moved = Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y);
+    downPos = null;
+    if (moved > 4) return; // arrastou: não é selecção
+    const rect = canvas.getBoundingClientRect();
+    pointer.set(
+      ((e.clientX - rect.left) / rect.width) * 2 - 1,
+      -((e.clientY - rect.top) / rect.height) * 2 + 1
+    );
+    raycaster.setFromCamera(pointer, active);
+    const hits = raycaster.intersectObjects(
+      scene.children.filter((o) => o.userData?.type === 'panel'),
+      false
+    );
+    select(hits[0]?.object ?? null);
+  });
+
+  // --- Alternação perspectiva/ortográfica (SPEC §5.A, §7) ---
+  function setOrthographic(useOrtho) {
+    const from = active;
+    const to = useOrtho ? ortho : persp;
+    to.position.copy(from.position);
+    to.quaternion.copy(from.quaternion);
+    if (to.isOrthographicCamera) {
+      const half =
+        ORTHO_HALF *
+        (from.isPerspectiveCamera ? from.position.distanceTo(orbit.target) / 8 : 1);
+      to.left = -half;
+      to.right = half;
+      to.top = half;
+      to.bottom = -half;
+    }
+    orbit.object = to;
+    transform.camera = to;
+    active = to;
+    resize();
+  }
+
+  // --- Vistas predefinidas (SPEC §5.A) ---
+  const VIEWS = {
+    frontal: { pos: [0, 1.5, 8], target: [0, 1.2, 0] },
+    superior: { pos: [0.01, 9, 0.01], target: [0, 0, 0] },
+    lateral: { pos: [8, 1.5, 0], target: [0, 1.2, 0] },
+    centro: { pos: [0, 1.6, 0], target: [0, 1.6, -5] },
+  };
+  function setView(name) {
+    const v = VIEWS[name];
+    if (!v) throw new Error(`vista desconhecida: ${name}`);
+    active.position.set(...v.pos);
+    orbit.target.set(...v.target);
+    active.updateProjectionMatrix();
+  }
+
+  function resize() {
+    const w = canvas.clientWidth || 1;
+    const h = canvas.clientHeight || 1;
+    renderer.setSize(w, h, false);
+    persp.aspect = w / h;
+    persp.updateProjectionMatrix();
+    const half = ortho.right;
+    ortho.left = -half;
+    ortho.right = half;
+    ortho.top = half * (h / w);
+    ortho.bottom = -half * (h / w);
+    ortho.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  let disposed = false;
+  function frame() {
+    if (disposed) return;
+    requestAnimationFrame(frame);
+    orbit.update();
+    renderer.render(scene, active);
+  }
+  frame();
+
+  return {
+    scene,
+    get camera() {
+      return active;
+    },
+    setOrthographic,
+    setView,
+    select,
+    get selected() {
+      return selected;
+    },
+    dispose() {
+      disposed = true;
+    },
+  };
+}
