@@ -1,0 +1,179 @@
+{
+  "schema": "svicente-images-v1",
+  "source": {
+    "url": "https://commons.wikimedia.org/wiki/File:Lisboa-Museu_Nacional_de_Arte_Antiga-Pol%C3%ADptico_de_S%C3%A3o_Vicente-20140917.jpg",
+    "author": "Daniel Villafruela",
+    "date": "2014-09-17",
+    "camera": "Canon EOS 70D, 19 mm, f/2.8, ISO 3200",
+    "license_photo": "CC BY-SA 3.0",
+    "license_photo_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "license_artwork": "Domínio público (PD-Art) — Nuno Gonçalves, c. 1470–1480",
+    "attribution_required": "Fotografia: Daniel Villafruela, CC BY-SA 3.0, via Wikimedia Commons. Obra: Nuno Gonçalves, c. 1470–1480, domínio público, Museu Nacional de Arte Antiga, Lisboa."
+  },
+  "measurement_caveat": "Medições feitas sobre esta fotografia estão sujeitas à distorção de perspectiva, distorção ótica da lente e resolução limitada (SPEC §8).",
+  "crop_provenance": "ESTIMADO",
+  "crop_note": "Limites de recorte ESTIMADOS: proporcionais às larguras publicadas (SPEC §3) sob hipótese de escala uniforme. A fotografia tem distorção de perspectiva (lente 19 mm) e vãos/molduras entre painéis; os recortes podem incluir moldura ou cortar conteúdo e devem ser verificados visualmente pelo investigador. Medições sobre esta imagem herdam as limitações da perspectiva fotográfica (SPEC §8).",
+  "source_image": {
+    "path": "assets/images/source/poliptico-villafruela-2014.jpg",
+    "width_px": 5346,
+    "height_px": 2034
+  },
+  "panels": [
+    {
+      "id": "frades",
+      "name": "Painel dos Frades",
+      "file": "assets/images/panels/frades.jpg",
+      "crop_px": {
+        "x0": 0,
+        "x1": 681,
+        "y0": 0,
+        "y1": 2034
+      },
+      "crop_fraction": [
+        "0",
+        "107/840"
+      ],
+      "resolution_px": {
+        "width": 681,
+        "height": 2034
+      },
+      "published_m": {
+        "height": 2.072,
+        "width": 0.642
+      },
+      "provenance": "ESTIMADO",
+      "source": "https://commons.wikimedia.org/wiki/File:Lisboa-Museu_Nacional_de_Arte_Antiga-Pol%C3%ADptico_de_S%C3%A3o_Vicente-20140917.jpg",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "pescadores",
+      "name": "Painel dos Pescadores",
+      "file": "assets/images/panels/pescadores.jpg",
+      "crop_px": {
+        "x0": 681,
+        "x1": 1317,
+        "y0": 0,
+        "y1": 2034
+      },
+      "crop_fraction": [
+        "107/840",
+        "69/280"
+      ],
+      "resolution_px": {
+        "width": 636,
+        "height": 2034
+      },
+      "published_m": {
+        "height": 2.07,
+        "width": 0.6
+      },
+      "provenance": "ESTIMADO",
+      "source": "https://commons.wikimedia.org/wiki/File:Lisboa-Museu_Nacional_de_Arte_Antiga-Pol%C3%ADptico_de_S%C3%A3o_Vicente-20140917.jpg",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "infante",
+      "name": "Painel do Infante",
+      "file": "assets/images/panels/infante.jpg",
+      "crop_px": {
+        "x0": 1317,
+        "x1": 2675,
+        "y0": 0,
+        "y1": 2034
+      },
+      "crop_fraction": [
+        "69/280",
+        "1261/2520"
+      ],
+      "resolution_px": {
+        "width": 1358,
+        "height": 2034
+      },
+      "published_m": {
+        "height": 2.064,
+        "width": 1.28
+      },
+      "provenance": "ESTIMADO",
+      "source": "https://commons.wikimedia.org/wiki/File:Lisboa-Museu_Nacional_de_Arte_Antiga-Pol%C3%ADptico_de_S%C3%A3o_Vicente-20140917.jpg",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "arcebispo",
+      "name": "Painel do Arcebispo",
+      "file": "assets/images/panels/arcebispo.jpg",
+      "crop_px": {
+        "x0": 2675,
+        "x1": 4036,
+        "y0": 0,
+        "y1": 2034
+      },
+      "crop_fraction": [
+        "1261/2520",
+        "761/1008"
+      ],
+      "resolution_px": {
+        "width": 1361,
+        "height": 2034
+      },
+      "published_m": {
+        "height": 2.06,
+        "width": 1.283
+      },
+      "provenance": "ESTIMADO",
+      "source": "https://commons.wikimedia.org/wiki/File:Lisboa-Museu_Nacional_de_Arte_Antiga-Pol%C3%ADptico_de_S%C3%A3o_Vicente-20140917.jpg",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "cavaleiros",
+      "name": "Painel dos Cavaleiros",
+      "file": "assets/images/panels/cavaleiros.jpg",
+      "crop_px": {
+        "x0": 4036,
+        "x1": 4677,
+        "y0": 0,
+        "y1": 2034
+      },
+      "crop_fraction": [
+        "761/1008",
+        "4409/5040"
+      ],
+      "resolution_px": {
+        "width": 641,
+        "height": 2034
+      },
+      "published_m": {
+        "height": 2.066,
+        "width": 0.604
+      },
+      "provenance": "ESTIMADO",
+      "source": "https://commons.wikimedia.org/wiki/File:Lisboa-Museu_Nacional_de_Arte_Antiga-Pol%C3%ADptico_de_S%C3%A3o_Vicente-20140917.jpg",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "reliquia",
+      "name": "Painel da Relíquia",
+      "file": "assets/images/panels/reliquia.jpg",
+      "crop_px": {
+        "x0": 4677,
+        "x1": 5346,
+        "y0": 0,
+        "y1": 2034
+      },
+      "crop_fraction": [
+        "4409/5040",
+        "1"
+      ],
+      "resolution_px": {
+        "width": 669,
+        "height": 2034
+      },
+      "published_m": {
+        "height": 2.065,
+        "width": 0.631
+      },
+      "provenance": "ESTIMADO",
+      "source": "https://commons.wikimedia.org/wiki/File:Lisboa-Museu_Nacional_de_Arte_Antiga-Pol%C3%ADptico_de_S%C3%A3o_Vicente-20140917.jpg",
+      "license": "CC BY-SA 3.0"
+    }
+  ]
+}

@@ -1,15 +1,25 @@
 /**
  * Vistas dos painéis: plano texturado com a imagem frontal.
  *
- * ENQUANTO NÃO EXISTEM AS IMAGENS OFICIAIS (T004), é aplicada uma textura
- * placeholder gerada por código, claramente identificada como placeholder —
- * nunca se apresenta placeholder como sendo a imagem do painel (rigor
- * histórico, SPEC §8, N3).
+ * Textura primária: recorte da fotografia de Daniel Villafruela
+ * (CC BY-SA 3.0; obra original em domínio público) — ver
+ * assets/images/panels/manifest.json para metadados completos e
+ * limitações de medição (SPEC §8, N4).
+ *
+ * Os limites de recorte são ESTIMADOS (proporção de larguras publicadas);
+ * se o investigador detetar desalinhamento, corrige no manifest e corre
+ * `python3 analysis/crop_panels.py` (reprodutível).
+ *
+ * Fallback: textura placeholder gerada por código, usada apenas se a
+ * imagem real falhar ao carregar — nunca se apresenta placeholder como
+ * sendo a imagem do painel (rigor histórico, SPEC §8, N3).
  */
 import * as THREE from 'three';
 import { getPanel } from '../model/panels.js';
 
-const PLACEHOLDER_NOTE = 'TEXTURA PLACEHOLDER — sem imagem oficial (T004)';
+const PLACEHOLDER_NOTE = 'TEXTURA PLACEHOLDER — imagem real indisponível';
+
+const textureLoader = new THREE.TextureLoader();
 
 /**
  * Textura placeholder: fundo neutro com o nome e o aviso.
@@ -58,6 +68,24 @@ export function createPanelView(id) {
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = `panel-${panel.id}`;
   mesh.userData = { type: 'panel', panelId: panel.id, panel };
+
+  // Carrega a imagem real (recorte ESTIMADO do manifesto, SPEC §8).
+  textureLoader.load(
+    `./assets/images/panels/${panel.id}.jpg`,
+    (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      mat.map?.dispose();
+      mat.map = tex;
+      mat.needsUpdate = true;
+      mesh.userData.imageSource = 'villafruela-2014';
+    },
+    undefined,
+    () => {
+      // Fallback mantém a textura placeholder já aplicada (N3).
+      console.warn(`Imagem de ${panel.id} indisponível — placeholder activo.`);
+    }
+  );
+
   return mesh;
 }
 
