@@ -2,7 +2,7 @@
 project: svicente — Painéis de São Vicente, Laboratório Espacial 3D
 created: 2026-10-18
 current_sprint: sprint-01
-current_ticket: ""
+current_ticket: T008
 ---
 
 # Kanban — svicente
@@ -18,9 +18,10 @@ current_ticket: ""
 | T005 | Camada de anotação: linhas do pavimento (coords normalizadas) | sprint-01 | done |
 | T006 | Configurações alternativas (plana, angular, U, irregular) + arquitetura (B004) | sprint-01 | done |
 | T007 | Análise: retas, pontos de fuga, desvios angulares entre painéis | sprint-01 | done |
-| T008 | Cenários nomeados + LocalStorage + export/import JSON | sprint-01 | pending |
+| T008 | Cenários nomeados + LocalStorage + export/import JSON | sprint-01 | done |
 | T009 | Perspetiva/ortográfica + posições de câmara guardadas | sprint-01 | pending |
 | T010 | Exportações (imagem, tabela, anotações, versão+parâmetros) | sprint-01 | pending |
+| T011 | Texturas v3: digitalizações sem moldura (domínio público, Commons/Google Arts & Culture) — substituir bases GIMP, nova cadeia de proveniência | sprint-01 | pending |
 
 ## In Progress
 
@@ -36,6 +37,9 @@ current_ticket: ""
 | T003 | Painel de propriedades com edição numérica + vistas predefinidas |
 | T004 | Imagens dos painéis + metadados de proveniência e licença |
 | T005 | Camada de anotação: linhas do pavimento (coord. normalizadas) |
+| T006 | Disposições alternativas + arquitetura como restrições (B004) |
+| T007 | Análise: retas, pontos de fuga, diedros, continuidade transfronteira |
+| T008 | Cenários nomeados + LocalStorage + export/import JSON |
 
 ## Blocked
 

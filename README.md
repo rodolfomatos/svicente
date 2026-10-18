@@ -333,16 +333,19 @@ Estado actual (2026-10-18):
 | T005 Anotações de linhas               | done    |
 | T006 Disposições + arquitetura (B004)  | done    |
 | T007 Métricas de análise               | done    |
-| T008 Cenários nomeados + export/import | pending |
+| T008 Cenários nomeados + export/import | done    |
 | T009 Câmaras guardadas                 | pending |
 | T010 Exportações para o artigo         | pending |
+| T011 Texturas v3 (digitalizações PD)   | pending |
 
 ---
 
 ## Imagens, fontes e licenças
 
-- **Obra:** Políptico de São Vicente, Nuno Gonçalves, c. 1470–1480 —
-  domínio público (MNAAT, Lisboa).
+- **Obra:** Políptico de São Vicente, Nuno Gonçalves, séc. XV
+  (estimativa clássica c. 1470–1480; dendrocronologia de Peter Klein
+  apoia c. 1445 — ver `docs/HYPOTHESES.md`) — domínio público (MNAAT,
+  Lisboa).
 - **Fotografia base:** «Lisboa-Museu Nacional de Arte Antiga-Políptico
   de São Vicente-20140917.jpg», Villafruela (2014), **CC BY-SA 3.0**,
   via Wikimedia Commons. Atribuição visível na UI (rodapé).

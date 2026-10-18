@@ -169,6 +169,27 @@ export function createViewer(
     active.updateProjectionMatrix();
   }
 
+  // --- Estado da câmara (SPEC §7: guardado com o cenário, T008) ---
+  function getCameraState() {
+    return {
+      position: {
+        x: active.position.x,
+        y: active.position.y,
+        z: active.position.z,
+      },
+      target: { x: orbit.target.x, y: orbit.target.y, z: orbit.target.z },
+      orthographic: active.isOrthographicCamera === true,
+    };
+  }
+
+  function setCameraState(state) {
+    if (!state) return;
+    setOrthographic(Boolean(state.orthographic));
+    active.position.set(state.position.x, state.position.y, state.position.z);
+    orbit.target.set(state.target.x, state.target.y, state.target.z);
+    active.updateProjectionMatrix();
+  }
+
   function resize() {
     const w = canvas.clientWidth || 1;
     const h = canvas.clientHeight || 1;
@@ -201,6 +222,8 @@ export function createViewer(
     },
     setOrthographic,
     setView,
+    getCameraState,
+    setCameraState,
     select,
     /** Liga/desliga o modo de traço de linhas (SPEC §6.1). */
     setDrawMode(on) {

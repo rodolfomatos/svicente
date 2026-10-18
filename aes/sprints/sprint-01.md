@@ -21,6 +21,10 @@ pavimento (critérios 1–7 de SPEC §10).
 | T005 | Camada de anotação: linhas do pavimento (coords normalizadas) | done |
 | T006 | Disposições alternativas + arquitetura como restrições (B004) | done |
 | T007 | Métricas: diedros, pontos de fuga, continuidade transfronteira | done |
+| T008 | Cenários nomeados + LocalStorage + export/import JSON | done |
+| T009 | Perspetiva/ortográfica + posições de câmara guardadas | pending |
+| T010 | Exportações (imagem, tabela, anotações, versão+parâmetros) | pending |
+| T011 | Texturas v3: digitalizações sem moldura (domínio público, Commons) | pending |
 
 > T006 foi executado em sprint-01 por dependência natural de T005
 > (frames de parede generalizam a colocação) — «personalizada» ficou

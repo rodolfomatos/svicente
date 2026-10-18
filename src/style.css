@@ -124,14 +124,23 @@ aside .hint {
   font-size: 12px;
 }
 
-#props-fields dt {
+#props-panel .field {
+  display: block;
   color: var(--muted);
   font-size: 12px;
   margin-top: 8px;
 }
-#props-fields dd {
-  margin: 2px 0 0;
-  font-family: 'SF Mono', 'Fira Code', monospace;
+#props-panel input,
+#props-panel select {
+  display: block;
+  width: 100%;
+  margin-top: 2px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font: inherit;
 }
 
 .provenance {
@@ -226,4 +235,49 @@ aside h3 {
 .metric-value {
   text-align: right;
   overflow-wrap: anywhere;
+}
+
+/* --- Painel de cenários (T008) --- */
+#scenarios {
+  margin-top: 4px;
+}
+#scenarios input[type='text'],
+#scenarios select,
+#scenarios button,
+#scenarios .file-label {
+  display: block;
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font: inherit;
+  margin-top: 6px;
+  text-align: left;
+}
+#scenarios select {
+  min-height: 88px;
+}
+#scenarios button,
+#scenarios .file-label {
+  cursor: pointer;
+  text-align: center;
+  margin-top: 0;
+}
+#scenarios button:hover,
+#scenarios .file-label:hover {
+  border-color: var(--muted);
+}
+#scenarios .btn-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+#scenarios .btn-row > * {
+  flex: 1;
+  min-width: 0;
+}
+#scenario-status.error {
+  color: #e0a3a3;
 }

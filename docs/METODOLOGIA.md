@@ -184,3 +184,42 @@ só restringe o espaço de hipóteses (SPEC §1).
 
 Verificação: `make visual-check` calcula direcção dominante sobre
 traçados reais da cena (screenshot `tmp/visual-check-metricas.png`).
+
+## 9. Cenários e persistência (T008)
+
+Um **cenário** é o estado completo da investigação numa dada
+experiência: disposição + parâmetros (raio, ângulo), colocação
+efectiva de cada painel (parede, offsets, dimensões efectivas, posição
+Y, rotação, face virada), anotações do investigador (traçados de linhas
+— MEDIDOS), elementos de arquitetura (restrições), visibilidade de
+camadas e câmara (SPEC §6.4, §7). Guarda-se no LocalStorage
+(`svicente.scenarios.v1`) e exporta-se como JSON.
+
+**Semântica (rigor histórico, SPEC §8):** um cenário guardado é um
+EXPERIMENTO (HIPÓTESE) com os MEDIDOS do investigador — nunca uma
+reconstrução. Alternar entre cenários é alternar entre experiências,
+não entre verdades. A UI marca-o explicitamente.
+
+**Validação na entrada (`parseScenario`):** o JSON importado/carregado
+é validado campo a campo, recolhendo TODOS os erros de uma vez
+(esquema, versão, nome, disposição, painéis conhecidos, campos
+numéricos, UV em [0,1], segmentos não degenerados, elementos,
+câmara, camadas). Um cenário inválido nunca é aplicado nem persistido
+— o repositório revalida antes de escrever (última linha de defesa).
+
+**Recuperação de corrupção:** JSON ilegível no LocalStorage → lista
+vazia + `lastError` legível; guardar um cenário novo recupera o
+armazenamento. A câmara é guardada posicionalmente (posição + alvo +
+tipo de projecção).
+
+**Cenários predefinidos A–D (SPEC §6.4):** A = linha plana, B = linha
+angular, C = hexágono regular (hipótese C da SPEC §4), D = hexágono
+irregular. A/B/D abrem para +Z; C fecha. Os seis painéis distribuem-se
+por parede round-robin; em A ficam numa só parede, centrados pelo
+bloco (largura pintada total + folgas de 0,05 m). Todos predefinidos
+carregam `positionY = altura/2` (pé no pavimento) e sem anotações.
+
+**Verificação:** `make visual-check` cobre o roundtrip — guardar
+cenário com anotações → recarregar a página → cenário presente →
+carregar repõe as contagens de anotações → apagar limpa a lista
+(screenshot `tmp/visual-check-cenarios.png`).

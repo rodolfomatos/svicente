@@ -8,6 +8,8 @@
  * restrições com dimensões ESTIMADAS.
  * Métricas (T007): direções dominantes, pontos de fuga, diedros,
  * continuidade transfronteira (H1/H2).
+ * Cenários (T008): guardar/carregar o estado completo (SPEC §6.4, §7,
+ * §9) como EXPERIMENTOS nomeados no LocalStorage + JSON exportável.
  */
 import * as THREE from 'three';
 import { placeOnWall } from './geometry/panelPlacement.js';
@@ -29,6 +31,9 @@ import { createAnalysisPanel } from './ui/analysisPanel.js';
 import { createArchitecturePanel } from './ui/architecturePanel.js';
 import { createMetricsPanel } from './ui/metricsPanel.js';
 import { createPropertiesPanel } from './ui/propertiesPanel.js';
+import { createScenarioPanel } from './ui/scenarioPanel.js';
+import { createDefaultScenarios, parseScenario, serializeScenario } from './model/scenarios.js';
+import { createScenarioRepository } from './model/storage.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -40,6 +45,8 @@ let layout = buildLayout('hexagono', { radius: 3 });
 /** Elementos de arquitetura (B004). */
 let elements = [];
 let elementSeq = 0;
+/** Parâmetros da disposição activa (guardados no cenário, SPEC §6.4). */
+const layoutParams = { radius: 3, angleDeg: 90 };
 
 /** Anotações de linhas por painel (coordenadas normalizadas, SPEC §6.1). */
 const annotations = createAnnotationStore();
@@ -47,7 +54,7 @@ const annotations = createAnnotationStore();
 const annotationLayers = new Map();
 const layerVisibility = new Map(); // por defeito visível
 
-const properties = createPropertiesPanel($('properties'), { onEdit });
+const properties = createPropertiesPanel($('props-panel'), { onEdit });
 const analysis = createAnalysisPanel($('analysis-layers'), {
   onToggle: (panelId, visible) => {
     layerVisibility.set(panelId, visible);
@@ -304,13 +311,16 @@ for (const l of LAYOUTS) {
 }
 configSelect.addEventListener('change', () => {
   const radius = Number($('radius-input').value) || 3;
+  layoutParams.radius = radius;
   buildScene(buildLayout(configSelect.value, { radius }));
 });
 
 $('radius-input').addEventListener('change', (e) => {
   const v = Number(e.target.value);
-  if (Number.isFinite(v) && v >= 0.5) buildScene(buildLayout(layout.id, { radius: v }));
-  else e.target.value = space.metrics.radius ?? 3;
+  if (Number.isFinite(v) && v >= 0.5) {
+    layoutParams.radius = v;
+    buildScene(buildLayout(layout.id, { radius: v }));
+  } else e.target.value = String(layoutParams.radius);
 });
 
 $('view-frontal').addEventListener('click', () => viewer.setView('frontal'));
@@ -353,6 +363,120 @@ function toggleLayers() {
 ['show-walls', 'show-floor', 'show-grid', 'show-axes'].forEach((id) =>
   $(id).addEventListener('change', toggleLayers)
 );
+
+// --- Cenários (T008 — SPEC §6.4, §7, §9) ---
+const scenarioRepository = createScenarioRepository({ storage: window.localStorage });
+
+function panelMeshes() {
+  return viewer.scene.children.filter((o) => o.userData?.type === 'panel');
+}
+
+/**
+ * Captura o estado COMPLETO da investigação: disposição + parâmetros,
+ * colocação efectiva de cada painel, anotações (MEDIDOS do
+ * investigador), elementos de arquitetura, visibilidade de camadas e
+ * câmara (SPEC §7: «a posição da câmara será guardada com o cenário»).
+ */
+function captureSnapshot(name, description) {
+  const panels = {};
+  for (const mesh of panelMeshes()) {
+    panels[mesh.userData.panel.id] = {
+      ...mesh.userData.state,
+      positionY: mesh.position.y,
+      rotationY: mesh.rotation.y,
+    };
+  }
+  return {
+    name,
+    description,
+    layout: { id: layout.id, ...layoutParams },
+    panels,
+    annotations: annotations.serialize(),
+    elements: elements.map((e) => ({ ...e })),
+    analysis: { layerVisibility: Object.fromEntries(layerVisibility) },
+    camera: viewer.getCameraState(),
+  };
+}
+
+/**
+ * Aplica um cenário à cena: reconstrói a disposição, repõe estados de
+ * colocação, anotações, camadas, elementos e câmara. Alternar de
+ * cenário é alternar de EXPERIMENTO — nunca uma «verdade» carregada
+ * (SPEC §8).
+ */
+function applyScenario(scn) {
+  configSelect.value = scn.layout.id;
+  $('radius-input').value = String(scn.layout.radius);
+  layoutParams.radius = scn.layout.radius;
+  layoutParams.angleDeg = scn.layout.angleDeg;
+  // Anotações ANTES da reconstrução: as camadas criadas por buildScene
+  // já nascem com os segmentos carregados.
+  annotations.load(scn.annotations ?? {});
+  buildScene(
+    buildLayout(scn.layout.id, {
+      radius: scn.layout.radius,
+      angleDeg: scn.layout.angleDeg,
+    })
+  );
+  for (const mesh of panelMeshes()) {
+    const st = scn.panels[mesh.userData.panel.id];
+    if (!st) continue;
+    mesh.userData.state = { ...st };
+    applyState(mesh);
+    // Altura/rotação livres do investigador (SPEC §5.B) por cima do
+    // estado de parede.
+    if (st.positionY != null) mesh.position.y = st.positionY;
+    if (st.rotationY != null) mesh.rotation.y = st.rotationY;
+  }
+  layerVisibility.clear();
+  for (const [id, v] of Object.entries(scn.analysis?.layerVisibility ?? {})) {
+    layerVisibility.set(id, v);
+  }
+  refreshAnalysis();
+  for (const [id, layer] of annotationLayers) {
+    layer.setVisible(layerVisibility.get(id) !== false);
+  }
+  elements = (scn.elements ?? []).map((e) => ({ ...e }));
+  // Numeração de elementos continua de onde o cenário ficou (e5 → 6).
+  elementSeq = elements.reduce(
+    (max, e) => Math.max(max, Number.parseInt(e.id.slice(1), 10) || 0),
+    0
+  );
+  refreshArchitecture();
+  if (scn.camera) viewer.setCameraState(scn.camera);
+  metricsPanel.refresh(analyzeLayout(collectPanelsForAnalysis()));
+  viewer.select(null);
+}
+
+createScenarioPanel($('scenarios'), {
+  repository: scenarioRepository,
+  save: (name, description) =>
+    scenarioRepository.save(serializeScenario(captureSnapshot(name, description))),
+  load: (id) => {
+    const stored = scenarioRepository.get(id);
+    if (!stored) return { ok: false, errors: [`cenário «${id}» não encontrado`] };
+    const check = parseScenario(stored);
+    if (!check.ok) return check;
+    applyScenario(check.scenario);
+    return { ok: true, scenario: check.scenario };
+  },
+  remove: (id) => scenarioRepository.remove(id),
+  exportJson: (name) =>
+    JSON.stringify(serializeScenario(captureSnapshot(name, '')), null, 2),
+  importJson: (text) => {
+    const check = parseScenario(text);
+    if (!check.ok) return check;
+    // Importação mantém id/savedAt (upsert) — reimportar actualiza.
+    return scenarioRepository.save(check.scenario);
+  },
+  seedDefaults: () => {
+    let count = 0;
+    for (const d of createDefaultScenarios()) {
+      if (scenarioRepository.save(d).ok) count += 1;
+    }
+    return { ok: count > 0, count };
+  },
+});
 
 // --- Arranque ---
 configSelect.value = 'hexagono';
