@@ -229,3 +229,33 @@ carregam `positionY = altura/2` (pé no pavimento) e sem anotações.
 cenário com anotações → recarregar a página → cenário presente →
 carregar repõe as contagens de anotações → apagar limpa a lista
 (screenshot `tmp/visual-check-cenarios.png`).
+
+## 10. Exportação e reprodutibilidade (T010)
+
+SPEC §9 exige: guardar/carregar projetos JSON, exportar vista 3D,
+exportar tabela de medições, exportar anotações por painel, registar
+versão + parâmetros e guardar descrição da hipótese. Cada resultado
+deve poder ser reproduzido a partir dos dados e parâmetros guardados.
+
+**Saídas (`src/scene/export.js`, sem servidor nem build step):**
+
+- **Vista 3D (PNG):** `canvas.toDataURL('image/png')` da cena renderizada.
+- **Tabela de medições (CSV):** uma linha por painel — id, nome,
+  dimensões publicadas, posição (X/Y/Z), rotação Y, parede associada,
+  deslocamento lateral, distância à parede — mais disposição, raio e
+  ângulo da disposição activa.
+- **Anotações por painel (JSON):** segmentos UV normalizados
+  `[0,1]²` (imunes à escala da textura), schema `svicente-annotations-v1`.
+- **Versão + parâmetros (JSON):** versão da aplicação (`APP_VERSION`),
+  disposição, raio, ângulo, câmara, descrição da hipótese,
+  schema `svicente-params-v1`.
+- **Projecto completo (JSON):** bundle com schema `svicente/scenario` v1
+  + metadados (app_version, created_at, nota de proveniência). Como usa
+  o mesmo schema/versão do cenário, é diretamente re-importável por
+  `parseScenario` — o roundtrip export→import preserva as anotações sem
+  perda (SPEC §10.10), validado em `tests/scene/export.test.js`.
+
+**Semântica:** cada exportação carrega a nota de proveniência
+(`PROVENANCE_NOTE`) e a advertência de que configurações são
+EXPERIMENTOS (HIPÓTESE), nunca reconstruções históricas (SPEC §1, §8).
+

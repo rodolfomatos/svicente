@@ -102,8 +102,6 @@ export function distributePanelsAlongWalls(walls, panels) {
   const nWalls = walls.length;
   const result = new Array(nPanels);
 
-  const wallLen = (w) => Math.hypot(w.b.x - w.a.x, w.b.z - w.a.z);
-
   if (nWalls === nPanels) {
     for (let i = 0; i < nPanels; i++) result[i] = { wallIndex: i, lateralOffset: 0 };
     return result;

@@ -20,8 +20,6 @@ current_ticket: T008
 | T007 | Análise: retas, pontos de fuga, desvios angulares entre painéis | sprint-01 | done |
 | T008 | Cenários nomeados + LocalStorage + export/import JSON | sprint-01 | done |
 | T009 | Perspetiva/ortográfica + posições de câmara guardadas | sprint-01 | pending |
-| T010 | Exportações (imagem, tabela, anotações, versão+parâmetros) | sprint-01 | pending |
-| T011 | Texturas v3: digitalizações sem moldura (domínio público, Commons/Google Arts & Culture) — substituir bases GIMP, nova cadeia de proveniência | sprint-01 | in-progress |
 
 ## In Progress
 
@@ -40,6 +38,8 @@ current_ticket: T008
 | T006 | Disposições alternativas + arquitetura como restrições (B004) |
 | T007 | Análise: retas, pontos de fuga, diedros, continuidade transfronteira |
 | T008 | Cenários nomeados + LocalStorage + export/import JSON |
+| T010 | Exportações (imagem, tabela, anotações, versão+parâmetros) |
+| T011 | Texturas v3 — digitalizações sem moldura (domínio público, Commons/Google Arts & Culture) |
 
 ## Blocked
 

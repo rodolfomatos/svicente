@@ -335,7 +335,7 @@ Estado actual (2026-10-18):
 | T007 Métricas de análise               | done    |
 | T008 Cenários nomeados + export/import | done    |
 | T009 Câmaras guardadas                 | pending |
-| T010 Exportações para o artigo         | pending |
+| T010 Exportações para o artigo         | done    |
 | T011 Texturas v3 (digitalizações PD)   | in-progress |
 
 ---
@@ -346,19 +346,36 @@ Estado actual (2026-10-18):
   (estimativa clássica c. 1470–1480; dendrocronologia de Peter Klein
   apoia c. 1445 — ver `docs/HYPOTHESES.md`) — domínio público (MNAAT,
   Lisboa).
-- **Fotografia base:** «Lisboa-Museu Nacional de Arte Antiga-Políptico
-  de São Vicente-20140917.jpg», Villafruela (2014), **CC BY-SA 3.0**,
-  via Wikimedia Commons. Atribuição visível na UI (rodapé).
-- **Texturas dos painéis:** recortes do investigador (GIMP — remoção
-  de molduras + correcção de perspectiva, 2026-10-18) sobre a
-  fotografia acima. Cadeia completa em
-  `assets/images/panels/manifest.json` (classificação MEDIDO; nota de
-  perspectiva residual objective 19 mm, deltas de proporção 0,7–5,0%
-  vs. tabelas publicadas).
+- **Texturas dos painéis (v3):** digitalizações retificadas dos seis
+  painéis, sem moldura, Google Arts & Culture / MNAAT, domínio público,
+  via Wikimedia Commons (até 4727×7713 px). Redimensionadas a 2048 px
+  de altura (JPEG 90) por `analysis/build_textures_v3.py`.
+  Cadeia de proveniência completa em
+  `assets/images/panels/manifest.json` (schema `svicente-images-v3`);
+  deltas de proporção vs. dimensões publicadas registados por painel
+  (MEDIDO). O manifesto v2 (bases GIMP sobre fotografia Villafruela
+  CC BY-SA 3.0) preservado em `manifest-v2.json` como histórico.
 - **Código:** [CC BY-SA 3.0](LICENSE) — escolha deliberada para ser
   consistente com a licença da fotografia base das texturas
   (Villafruela, CC BY-SA 3.0); reutilizações derivadas partilham a
   mesma licença, com atribuição.
+
+## Exportação (T010)
+
+A aplicação exporta, sem servidor e sem build step:
+
+- **Vista 3D (PNG):** screenshot da cena renderizada (`Exportar vista`).
+- **Tabela de medições (CSV):** um linha por painel com id, nome,
+  dimensões publicadas, posição (X/Y/Z), rotação Y, parede associada,
+  deslocamento lateral e distância à parede (`Exportar medições`).
+- **Anotações por painel (JSON):** segmentos UV normalizados das linhas
+  do pavimento (`Exportar anotações`).
+- **Versão + parâmetros (JSON):** versão da aplicação, disposição,
+  raio, ângulo, câmara, descrição da hipótese (`Exportar versão +
+  parâmetros`).
+- **Projecto completo (JSON):** tudo acima num único ficheiro, pronto
+  para reimportação (`Exportar projeto` / `Importar projeto`). O
+  roundtrip export→import preserva anotações sem perda (SPEC §10.10).
 
 Referências documentais adicionais em `docs/SPEC.md` (Google Arts &
 Culture; Modernismo.pt).

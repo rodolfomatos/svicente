@@ -35,6 +35,16 @@ import { createPropertiesPanel } from './ui/propertiesPanel.js';
 import { createScenarioPanel } from './ui/scenarioPanel.js';
 import { createDefaultScenarios, parseScenario, serializeScenario } from './model/scenarios.js';
 import { createScenarioRepository } from './model/storage.js';
+import {
+  exportImage,
+  exportMeasurementsCsv,
+  exportAnnotationsJson,
+  exportParamsJson,
+  exportProjectJson,
+  downloadText,
+  validateImportJson,
+  APP_VERSION,
+} from './scene/export.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -266,7 +276,7 @@ function buildScene(layoutDef) {
     viewer.scene.remove(mesh);
   }
   for (const layer of annotationLayers.values()) {
-    try { layer.dispose(); } catch (_) {}
+    layer.dispose();
   }
   annotationLayers.clear();
   layout = layoutDef;
@@ -490,6 +500,112 @@ createScenarioPanel($('scenarios'), {
     }
     return { ok: count > 0, count };
   },
+});
+
+// --- Exportação (T010) ---
+const ts = () =>
+  new Date()
+    .toISOString()
+    .replace(/[:.]/g, '-')
+    .slice(0, 13);
+
+function measurementRows() {
+  const rows = [];
+  for (const mesh of panelMeshes()) {
+    const st = mesh.userData.state || {};
+    const pub = mesh.userData.panel;
+    rows.push({
+      panelId: pub.id,
+      width: pub.width,
+      height: pub.height,
+      position: { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z },
+      rotationY: mesh.rotation.y,
+      wallIndex: st.wallIndex ?? 0,
+      lateralOffset: st.lateralOffset ?? 0,
+      distanceToWall: st.distanceToWall ?? 0,
+      state: st,
+    });
+  }
+  return rows;
+}
+
+$('export-vista').addEventListener('click', () => {
+  exportImage($('scene'), `svicente-vista-${ts()}`);
+});
+
+$('export-medicoes').addEventListener('click', () => {
+  const rows = measurementRows();
+  const csv = exportMeasurementsCsv(rows, {
+    layoutId: layout.id,
+    radius: layoutParams.radius,
+    angleDeg: layoutParams.angleDeg,
+  });
+  downloadText(
+    `svicente-metricas-${ts()}.csv`,
+    csv,
+    'text/csv;charset=utf-8'
+  );
+});
+
+$('export-annotacoes').addEventListener('click', () => {
+  const json = exportAnnotationsJson(annotations.serialize());
+  downloadText(
+    `svicente-annotacoes-${ts()}.json`,
+    json,
+    'application/json'
+  );
+});
+
+$('export-projeto').addEventListener('click', () => {
+  const snap = captureSnapshot('exportação', 'exportação para o artigo científico');
+  const json = exportProjectJson(snap, snap.name);
+  downloadText(
+    `svicente-projeto-${ts()}.json`,
+    json,
+    'application/json'
+  );
+});
+
+$('export-parametros').addEventListener('click', () => {
+  const snap = captureSnapshot('parâmetros', 'versão + parâmetros da configuração');
+  const json = exportParamsJson({
+    app_version: APP_VERSION,
+    name: snap.name,
+    description: snap.description,
+    layoutId: snap.layout.id,
+    radius: snap.layout.radius,
+    angleDeg: snap.layout.angleDeg,
+    camera: snap.camera,
+  });
+  downloadText(
+    `svicente-parametros-${ts()}.json`,
+    json,
+    'application/json'
+  );
+});
+
+$('import-projeto-btn').addEventListener('click', () => {
+  $('import-projeto').click();
+});
+$('import-projeto').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const check = validateImportJson(ev.target.result);
+    if (!check.ok) {
+      alert('Importação rejeitada:\n' + check.errors.join('\n'));
+      return;
+    }
+    const parsed = parseScenario(check.scenario);
+    if (!parsed.ok) {
+      alert('Esquema inválido:\n' + parsed.errors.join('\n'));
+      return;
+    }
+    applyScenario(parsed.scenario);
+    alert('Projeto importado com sucesso.');
+  };
+  reader.readAsText(file);
 });
 
 // --- Arranque ---
